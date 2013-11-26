@@ -4,6 +4,8 @@
 #include <list>
 #include <unordered_set>
 #include <map>
+#include <unordered_map>
+#include <sstream>
 
 using namespace std;
 
@@ -18,6 +20,13 @@ struct TreeNode {
     TreeNode *left;
     TreeNode *right;
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+struct Point {
+    int x;
+    int y;
+    Point() : x(0), y(0) {}
+    Point(int a, int b) : x(a), y(b) {}
 };
 
 class Solution {
@@ -789,6 +798,204 @@ public:
         if (right > start) myqsort(a, start, right);
     }
     
+    
+    /* Max Points on a Line
+     Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.   
+     
+     my solution:
+     represent a line by y = kx + b, but when a line is x = sth, set k = inf
+     then build a string (kb) and hash it into hashtable, then each pair on points vote for 1 of (kb)
+     then select the maxium vote and convert it to number of points on that line
+     */
+    /* another way to represent line: ax + by + c = 0, and a,b,c are int
+     for two points (x0, y0) and (x1, y1) where x0 != x1 or y0 != y1, we can set a = y1 - y0, b = x0 - x1 and c = x1 * y0 - x0 * y1. Then calculate the gcd of a, b and c and divide them by gcd. Then make a becomes non-negative and b non-negative when a is zero. ---- by poker2008 on leetcode
+     */
+    int maxPoints(vector<Point> &points) {
+        if (points.size() <= 2)
+            return points.size();
+        unordered_map<string, int> hashtable;
+        unordered_map<string, int>::iterator it;
+        
+        for (int i = 0; i < points.size(); i++) {
+            for (int j = 0; j < points.size(); j++) {
+                if (i == j)
+                    continue;
+                int x1 = points[i].x;
+                int y1 = points[i].y;
+                int x2 = points[j].x;
+                int y2 = points[j].y;
+                stringstream ss;
+                // check if it is vertical
+                if (x1 == x2) {
+                    // store the following pair: <inf, x>
+                    ss << "inf" << x1;
+                }
+                else { // a normal line
+                    double k = ((double)y1 - y2)/(x1 - x2);
+                    double b = y1 - k*x1;
+                    ss << k << b;
+                }
+                string code = ss.str();
+                it = hashtable.find(code);
+                if (it == hashtable.end()) {    //does not exist
+                    hashtable.insert(pair<string, int>(code, 1));
+                }
+                else {  // increase count by 1
+                    it->second++;
+                }
+            }
+        }
+        
+        // check the maximum
+        int maxCount = 0;
+        for (it = hashtable.begin(); it != hashtable.end(); it++)
+            if (it->second > maxCount)
+                maxCount = it->second;
+        
+        // maxCount = (n-1) + (n-2) + ... + 1
+        // maxCount = (n-1 + 1)(n-1)/2
+        // n = 1/2 + sqrt(2*macCount + 1/4)
+        int n = ceil(0.5+sqrt(2*maxCount+0.25));
+        return n;
+    }
+    
+    /* Add Two Numbers
+     You are given two linked lists representing two non-negative numbers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+     
+     Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+     Output: 7 -> 0 -> 8
+     */
+    ListNode *addTwoNumbers(ListNode *l1, ListNode *l2) {
+        // IMPORTANT: Please reset any member data you declared, as
+        // the same Solution instance will be reused for each test case.
+        if (!l1)
+            return l2;
+        if (!l2)
+            return l1;
+        
+        int carry = 0;
+        ListNode* head = NULL;
+        ListNode* it = head;
+        
+        while (l1 || l2) {
+            int num = 0;
+            if (!l1) {
+                num = l2->val + carry;
+                l2 = l2->next;
+            }
+            else if (!l2) {
+                num = l1->val + carry;
+                l1 = l1->next;
+            }
+            else {
+                num = l1->val + l2->val + carry;
+                l1 = l1->next;
+                l2 = l2->next;
+            }
+            if (num >= 10) {
+                num -= 10;
+                carry = 1;
+            }
+            else
+                carry = 0;
+            
+            ListNode* tmp = new ListNode(num);
+            if (!head) {
+                head = tmp;
+                it = tmp;
+            }
+            else {
+                it->next = tmp;
+                it = it->next;
+            }
+        }
+        
+        if (carry)
+            it->next = new ListNode(1);
+        
+        return head;
+    }
+    vector<vector<int> > threeSum(vector<int> &num) {
+        // IMPORTANT: Please reset any member data you declared, as
+        // the same Solution instance will be reused for each test case.
+        vector< vector<int> > result;
+        if (num.size() <= 2)
+            return result;
+        
+        // sort in ascending order
+        sort(num.begin(), num.end());
+        
+        // mem: <num[i], number of num[i]>
+        // hashtable to store elements and their counts
+        unordered_map<int, int> mem;
+        unordered_map<int, int>::iterator memit;
+        // mem_result: hashset to store result to check duplicated
+        unordered_set<string> mem_result;
+        
+        // store all elements in mem
+        for (int i = 0; i < num.size(); i++) {
+            memit = mem.find(num[i]);
+            if (memit == mem.end())
+                mem.insert(pair<int,int>(num[i], 1));
+            else
+                memit->second++;
+        }
+        
+        // calcluate 3 sum
+        for (int i = 0; i < num.size()-2; i++) {
+            if (i > 0 && num[i] == num[i-1])
+                continue;
+            // temporary reduce the count of num[i] by 1
+            memit = mem.find(num[i]);
+            memit->second--;
+            for (int j = i+1; j < num.size()-1;  j++) {
+                if (j > i+1 && num[j] == num[j-1])
+                    continue;
+                // temporary reduce the count of num[j] by 1
+                memit = mem.find(num[j]);
+                memit->second--;
+                
+                int target = -num[i] - num[j];
+                memit = mem.find(target);
+                if (memit != mem.end() && memit->second) {
+                    // we found the element!
+                    int c = memit->first;
+                    vector<int> single;
+                    stringstream ss;
+                    // check the order, given that we know num[i] <= num[j]
+                    if (c <= num[i]) {
+                        ss << c << num[i] << num[j];
+                        single.push_back(c);
+                        single.push_back(num[i]);
+                        single.push_back(num[j]);
+                    }
+                    else if ( c <= num[j]) {
+                        ss << num[i] << c << num[j];
+                        single.push_back(num[i]);
+                        single.push_back(c);
+                        single.push_back(num[j]);
+                    }
+                    else {
+                        ss << num[i] << num[j] << c;
+                        single.push_back(num[i]);
+                        single.push_back(num[j]);
+                        single.push_back(c);
+                    }
+                    
+                    if (mem_result.count(ss.str()) == 0) {  // if never see this result before
+                        mem_result.insert(ss.str());
+                        result.push_back(single);
+                    }
+                }
+                memit = mem.find(num[j]);
+                memit->second++;
+            }
+            memit = mem.find(num[i]);
+            memit->second++;
+        }
+        
+        return result;
+    }
 };
 
 template <class T>
@@ -861,7 +1068,7 @@ You are given a wooden stick of length X with m markings on it at arbitrary plac
  * the key is to think the wood in segments, each segments have different lens
  * */
 int cutWood(int len, vector<int> markers) {
-    int m = markers.size();
+    long m = markers.size();
     vector<int> pos;    // size of m+2, including begin and end
     pos.push_back(0);
     for (int i = 0; i < m; i++)
@@ -984,13 +1191,28 @@ int main() {
         xorSwap(a, b);
         cout << a << "\t" << b << endl;
     }
-    if (true) {
+    if (false) {
         vector<int> markers;
         markers.push_back(2);
         markers.push_back(5);
         markers.push_back(7);
 
         cout << cutWood(10, markers) << endl;
+    }
+    if (false) {
+        vector<Point> points;
+        points.push_back(Point(0,0));
+        points.push_back(Point(2,2));
+        points.push_back(Point(-1,-1));
+        
+        cout << solve.maxPoints(points) << endl;
+    }
+    if (true) {
+        int a[] = {-10,5,-11,-15,7,-7,-10,-8,-3,13,9,-14,4,3,5,-7,13,1,-4,-11,5,9,-11,-4,14,0,3,-10,-3,-7,10,-5,13,14,-5,6,14,0,5,-12,-10,-1,-11,9,9,1,-13,0,-13,-1,4,0,-7,8,3,14,-15,-9,-10,-3,0,-15,-1,-2,6,9,11,6,-14,1,1,-9,-14,6,7,10,14,2,-13,-13,8,6,-6,8,-9,12,7,-9,-11,4,-4,-4,4,10,1,-12,-3,-2,1,-10,6,-13,-3,-1,0,11,-5,0,-2,-11,-6,-9,11,3,14,-13,0,7,-14,-4,-4,-11,-1,8,6,8,3};
+        vector<int> aa(a, a+sizeof(a)/sizeof(int));
+        
+        vector<vector<int> > r = solve.threeSum(aa);
+        cout << r.size() << endl;
     }
 }
 
