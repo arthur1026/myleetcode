@@ -29,6 +29,12 @@ struct Point {
     Point(int a, int b) : x(a), y(b) {}
 };
 
+struct RandomListNode {
+    int label;
+    RandomListNode *next, *random;
+    RandomListNode(int x) : label(x), next(NULL), random(NULL) {}
+};
+
 class Solution {
 public:
 	// Word Break
@@ -996,6 +1002,49 @@ public:
         
         return result;
     }
+    
+    /* Copy List with Random Pointer
+     A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+     
+     Return a deep copy of the list.
+     */
+    RandomListNode *copyRandomList(RandomListNode *head) {
+        // IMPORTANT: Please reset any member data you declared, as
+        // the same Solution instance will be reused for each test case.
+        if (!head)
+            return NULL;
+        unordered_map<RandomListNode*, RandomListNode*> mem;
+        RandomListNode *n = NULL, *nit = NULL, *nitp = NULL;
+        RandomListNode *it = head;
+        
+        // first pass: copy data and next
+        while (it) {
+            // if n is empty
+            if (!n) {
+                n = new RandomListNode(it->label);
+                nit = n;
+            } else {
+                nit = new RandomListNode(it->label);
+                nitp->next = nit;
+            }
+            // push correspondence
+            mem[it] = nit;
+            it = it->next;
+            nitp = nit;
+            nit = nit->next;
+        }
+        // second pass: copy random pointer
+        it = head;
+        nit = n;
+        while(it) {
+            if (it->random)
+                nit->random = mem[it->random];
+            it = it->next;
+            nit = nit->next;
+        }
+        
+        return n;
+    }
 };
 
 template <class T>
@@ -1207,12 +1256,23 @@ int main() {
         
         cout << solve.maxPoints(points) << endl;
     }
-    if (true) {
+    if (false) {
         int a[] = {-10,5,-11,-15,7,-7,-10,-8,-3,13,9,-14,4,3,5,-7,13,1,-4,-11,5,9,-11,-4,14,0,3,-10,-3,-7,10,-5,13,14,-5,6,14,0,5,-12,-10,-1,-11,9,9,1,-13,0,-13,-1,4,0,-7,8,3,14,-15,-9,-10,-3,0,-15,-1,-2,6,9,11,6,-14,1,1,-9,-14,6,7,10,14,2,-13,-13,8,6,-6,8,-9,12,7,-9,-11,4,-4,-4,4,10,1,-12,-3,-2,1,-10,6,-13,-3,-1,0,11,-5,0,-2,-11,-6,-9,11,3,14,-13,0,7,-14,-4,-4,-11,-1,8,6,8,3};
         vector<int> aa(a, a+sizeof(a)/sizeof(int));
         
         vector<vector<int> > r = solve.threeSum(aa);
         cout << r.size() << endl;
+    }
+    if (true) {
+        RandomListNode *a = new RandomListNode(-1);
+        RandomListNode *b = new RandomListNode(1);
+        a->next = b;
+        RandomListNode *r = solve.copyRandomList(a);
+        
+        while (r) {
+            cout << r->label << "\t" << r->next << "\t" << r->random << endl;
+            r = r->next;
+        }
     }
 }
 
