@@ -705,6 +705,29 @@ public:
         return myxor;
     }
     
+    /* Single Number II 
+     Given an array of integers, every element appears three times except for one. Find that single one.
+     
+     Note:
+     Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+     */
+    int singleNumber2(int A[], int n) {
+        // IMPORTANT: Please reset any member data you declared, as
+        // the same Solution instance will be reused for each test case.
+        int count[32] = {0};
+        int result = 0;
+        for (int i = 0; i < 32; i ++) {
+            // shift i bits for each element
+            for (int j = 0; j < n; j++) {
+                if (A[j] & (1 << i))
+                    count[i] += 1;
+            }
+            if (count[i]%3)
+                result |= (1 << i);
+        }
+        return result;
+    }
+    
 	/* Reverse digits of an integer.
 	 */
 	// need to use reverse_iterator to traverse list backwards
