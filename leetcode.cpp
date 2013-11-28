@@ -1068,6 +1068,68 @@ public:
         
         return n;
     }
+    
+    /* Evaluate Reverse Polish Notation
+     Evaluate the value of an arithmetic expression in Reverse Polish Notation.
+     
+     Valid operators are +, -, *, /. Each operand may be an integer or another expression.
+     
+     Some examples:
+     ["2", "1", "+", "3", "*"] -> ((2 + 1) * 3) -> 9
+     ["4", "13", "5", "/", "+"] -> (4 + (13 / 5)) -> 6
+     */
+    int evalRPN(vector<string> &tokens) {
+        // use stack to store elements
+        // whenever there is an operator, pop last two elements to compute
+        if (tokens.empty())
+            return 0;
+        vector<int> mem;
+        for (int i = 0; i < tokens.size(); i++) {
+            if (tokens[i].size() == 1) {
+                // check if it is an operator
+                char p = tokens[i][0];
+                if (p == '+') {
+                    int b = mem.back();
+                    mem.pop_back();
+                    int a = mem.back();
+                    mem.pop_back();
+                    
+                    mem.push_back(a+b);
+                }
+                else if (p == '-') {
+                    int b = mem.back();
+                    mem.pop_back();
+                    int a = mem.back();
+                    mem.pop_back();
+                    
+                    mem.push_back(a-b);
+                }
+                else if (p == '*') {
+                    int b = mem.back();
+                    mem.pop_back();
+                    int a = mem.back();
+                    mem.pop_back();
+                    
+                    mem.push_back(a*b);
+                }
+                else if (p == '/') {
+                    int b = mem.back();
+                    mem.pop_back();
+                    int a = mem.back();
+                    mem.pop_back();
+                    
+                    mem.push_back(a/b);
+                }
+                else {  // number with single digit
+                    mem.push_back(atoi(tokens[i].c_str()));
+                }
+            }
+            else {  // number with multiple digits
+                mem.push_back(atoi(tokens[i].c_str()));
+            }
+        }
+        return mem.back();
+    }
 };
 
 template <class T>
@@ -1286,7 +1348,7 @@ int main() {
         vector<vector<int> > r = solve.threeSum(aa);
         cout << r.size() << endl;
     }
-    if (true) {
+    if (false) {
         RandomListNode *a = new RandomListNode(-1);
         RandomListNode *b = new RandomListNode(1);
         a->next = b;
@@ -1296,6 +1358,13 @@ int main() {
             cout << r->label << "\t" << r->next << "\t" << r->random << endl;
             r = r->next;
         }
+    }
+    if (true) {
+        vector<string> test1 = {"4","-2","/","2","-3","-","-"};
+        vector<string> input = {"-78","-33","196","+","-19","-","115","+","-","-99","/","-18","8","*","-86","-","-","16","/","26","-14","-","-","47","-","101","-","163","*","143","-","0","-","171","+","120","*","-60","+","156","/","173","/","-24","11","+","21","/","*","44","*","180","70","-40","-","*","86","132","-84","+","*","-","38","/","/","21","28","/","+","83","/","-31","156","-","+","28","/","95","-","120","+","8","*","90","-","-94","*","-73","/","-62","/","93","*","196","-","-59","+","187","-","143","/","-79","-89","+","-"};
+        
+        cout << solve.evalRPN(test1) << endl;
+        
     }
 }
 
