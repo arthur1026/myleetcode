@@ -1130,6 +1130,36 @@ public:
         }
         return mem.back();
     }
+    
+    /* Gas Station
+     There are N gas stations along a circular route, where the amount of gas at station i is gas[i].
+     
+     You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from station i to its next station (i+1). You begin the journey with an empty tank at one of the gas stations.
+     
+     Return the starting gas station's index if you can travel around the circuit once, otherwise return -1.
+     
+     Note:
+     The solution is guaranteed to be unique.
+     */
+    /* summary: it is like the linear time solution for maximum subarray problem
+     the key is that any sequence with negative sum cannot be the begining of the optimal subarray
+     ALSO, need to check whether overall fulfills the condition that total gas > total cost
+     THE FACT IS: if total gas > total cost, there must exist a path!
+     */
+    int canCompleteCircuit(vector<int> &gas, vector<int> &cost) {
+        int index = 0;
+        int oil = 0;
+        int total = 0;
+        for (int i = 0; i < gas.size(); i++) {
+            oil += gas[i] - cost[i];
+            total += gas[i] - cost[i];
+            if (oil < 0) {
+                oil = 0;
+                index = i+1;
+            }
+        }
+        return (total >= 0) ? index : -1;
+    }
 };
 
 template <class T>
