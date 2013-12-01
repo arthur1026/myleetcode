@@ -841,7 +841,7 @@ public:
      */
     int maxPoints(vector<Point> &points) {
         if (points.size() <= 2)
-            return points.size();
+            return (int)points.size();
         unordered_map<string, int> hashtable;
         unordered_map<string, int>::iterator it;
         
@@ -1160,6 +1160,50 @@ public:
         }
         return (total >= 0) ? index : -1;
     }
+    
+    /* Longest Consecutive Sequence
+     Given an unsorted array of integers, find the length of the longest consecutive elements sequence.
+     
+     For example,
+     Given [100, 4, 200, 1, 3, 2],
+     The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4.
+     
+     Your algorithm should run in O(n) complexity.
+     */
+    int longestConsecutive(vector<int> &num) {
+        if (num.size() < 2)
+            return (int)num.size();
+        unordered_map<int, int> mem;
+        // first pass: insert all into hashtable
+        for (int i =0 ; i < num.size(); i++)
+            mem[num[i]] = 1;
+        // second pass: search for each element
+        int maxLen = 1;
+        for (int i = 0; i < num.size(); i++) {
+            if (mem[num[i]]) {
+                mem[num[i]] = 0;
+                int tmpLen = 1;
+                // search for num[i]++s
+                int tmp = num[i]+1;
+                while (mem[tmp]) {
+                    mem[tmp] = 0;
+                    tmpLen++;
+                    tmp++;
+                }
+                // search for num[i]--s
+                tmp = num[i]-1;
+                while (mem[tmp]) {
+                    mem[tmp] = 0;
+                    tmpLen++;
+                    tmp--;
+                }
+                if (tmpLen > maxLen)
+                    maxLen = tmpLen;
+            }
+        }
+        return maxLen;
+    }
+
 };
 
 template <class T>
@@ -1389,11 +1433,15 @@ int main() {
             r = r->next;
         }
     }
-    if (true) {
+    if (false) {
         vector<string> test1 = {"4","-2","/","2","-3","-","-"};
         vector<string> input = {"-78","-33","196","+","-19","-","115","+","-","-99","/","-18","8","*","-86","-","-","16","/","26","-14","-","-","47","-","101","-","163","*","143","-","0","-","171","+","120","*","-60","+","156","/","173","/","-24","11","+","21","/","*","44","*","180","70","-40","-","*","86","132","-84","+","*","-","38","/","/","21","28","/","+","83","/","-31","156","-","+","28","/","95","-","120","+","8","*","90","-","-94","*","-73","/","-62","/","93","*","196","-","-59","+","187","-","143","/","-79","-89","+","-"};
         
         cout << solve.evalRPN(test1) << endl;
+    }
+    if (true) {
+        vector<int> test0 = {0, -1};
+        cout << solve.longestConsecutive(test0) << endl;
         
     }
 }
