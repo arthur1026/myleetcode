@@ -1230,6 +1230,43 @@ public:
         string ss2(ss.rbegin(), ss.rend());
         return !(ss.compare(ss2));
     }
+
+    /* Palindrome Number
+     Determine whether an integer is a palindrome. Do this without extra space.
+     
+     Some hints:
+     Could negative integers be palindromes? (ie, -1)
+     
+     If you are thinking of converting the integer to string, note the restriction of using extra space.
+     
+     You could also try reversing an integer. However, if you have solved the problem "Reverse Integer", you know that the reversed integer might overflow. How would you handle such case?
+     
+     There is a more generic way of solving this problem.
+     */
+    bool isPalindrome(int x) {
+        if (x == 0)
+            return true;
+        if (x <  0) // negative numbers are not palindromes
+            return false;
+        int maxBase = 1;
+        double doubleBase = 1;
+        while (x/(doubleBase*10) >= 1) {
+            doubleBase *= 10;
+        }
+        maxBase = (int)doubleBase;
+        while (maxBase >= 10) {
+            if (x == 0)
+                return true;
+            if (x%10 == x/maxBase) {
+                x = x - (x/maxBase)*maxBase;    // remove leading digit
+                x = x/10;   // remove ending digit
+                maxBase /= 100;
+            }
+            else
+                return false;
+        }
+        return true;
+    }
 };
 
 template <class T>
@@ -1465,10 +1502,13 @@ int main() {
         
         cout << solve.evalRPN(test1) << endl;
     }
-    if (true) {
+    if (false) {
         vector<int> test0 = {0, -1};
         cout << solve.longestConsecutive(test0) << endl;
         
+    }
+    if (true) {
+        cout << solve.isPalindrome(10) << endl;
     }
 }
 
