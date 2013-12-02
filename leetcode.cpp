@@ -1204,6 +1204,32 @@ public:
         return maxLen;
     }
 
+    /* Valid Palindrome
+     Given a string, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.
+     
+     For example,
+     "A man, a plan, a canal: Panama" is a palindrome.
+     "race a car" is not a palindrome.
+     
+     Note:
+     Have you consider that the string might be empty? This is a good question to ask during an interview.
+     
+     For the purpose of this problem, we define empty string as valid palindrome.
+     */
+    bool isPalindrome(string s) {
+        string ss;
+        char off = 'A' - 'a';
+        for (int i = 0; i < s.size(); i++) {
+            if ((s[i] >= 'a' && s[i] <= 'z') || (s[i] >= '0' && s[i] <= '9'))
+                ss.push_back(s[i]);
+            else if (s[i] >= 'A' && s[i] <= 'Z')
+                ss.push_back(char(s[i] - off));
+        }
+        if (!ss.size())
+            return true;
+        string ss2(ss.rbegin(), ss.rend());
+        return !(ss.compare(ss2));
+    }
 };
 
 template <class T>
