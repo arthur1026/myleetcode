@@ -1267,6 +1267,54 @@ public:
         }
         return true;
     }
+    
+    /* Palindrome Partitioning 
+     Given a string s, partition s such that every substring of the partition is a palindrome.
+     
+     Return all possible palindrome partitioning of s.
+     
+     For example, given s = "aab",
+     Return
+     
+     [
+     ["aa","b"],
+     ["a","a","b"]
+     ]
+     */
+    vector<vector<string>> partition(string s) {
+        vector<vector<string> > result;
+        // base case:
+        if (s.size() == 0)
+            return result;
+        if (s.size() == 1) {
+            result.push_back(vector<string>(1,s));
+            return result;
+        }
+        // recursion:
+        for (int i = 1; i < s.size(); i++) {
+            // substring
+            string ss(s, 0, i);
+            // check if it is a palindrome
+            string ss2(ss.rbegin(), ss.rend());
+            if (!ss.compare(ss2)) {
+                vector<vector<string> > r = partition(s.substr(i));
+                for (int j = 0; j < r.size(); j++) {
+                    vector<string> tmp;
+                    tmp.push_back(ss);
+                    for (int m = 0; m < r[j].size(); m++)
+                        tmp.push_back(r[j][m]);
+                    result.push_back(tmp);
+                }
+            }
+        }
+        // check s itself
+        string s2(s.rbegin(), s.rend());
+        if (!s.compare(s2))
+            result.push_back(vector<string>(1,s));
+        
+        return result;
+    }
+
 };
 
 template <class T>
