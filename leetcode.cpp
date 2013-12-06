@@ -35,6 +35,12 @@ struct RandomListNode {
     RandomListNode(int x) : label(x), next(NULL), random(NULL) {}
 };
 
+struct UndirectedGraphNode {
+    int label;
+    vector<UndirectedGraphNode *> neighbors;
+    UndirectedGraphNode(int x) : label(x) {};
+};
+
 class Solution {
 public:
 	// Word Break
@@ -1370,6 +1376,43 @@ public:
         }
         
         return cost[0][n-1];
+    }
+    
+    /* Clone Graph
+     Clone an undirected graph. Each node in the graph contains a label and a list of its neighbors.
+     */
+    UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
+        if (!node)
+            return NULL;
+        typedef UndirectedGraphNode ug;
+        // BFS + hashing
+        unordered_map<ug*, ug*> mem;
+        unordered_set<ug*> finished;
+        vector<ug*> agenda;
+        agenda.push_back(node);
+        
+        while(!agenda.empty()) {
+            ug* cur = agenda.back();
+            agenda.pop_back();
+            if (finished.count(cur))
+                continue;
+            if (!mem.count(cur))
+                mem[cur] = new ug(cur->label);
+            
+            // look at cur's neighbors
+            for (int i = 0; i < cur->neighbors.size(); i++) {
+                ug* cn = cur->neighbors[i];
+                // if cn's corresponding has not been created
+                if (!mem.count(cn))
+                    mem[cn] = new ug(cn->label);
+                // now mem[cn] should be available
+                mem[cur]->neighbors.push_back(mem[cn]);
+                agenda.push_back(cn);
+            }
+            finished.insert(cur);
+        }
+        
+        return mem[node];
     }
 };
 
