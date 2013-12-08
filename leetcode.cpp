@@ -1414,6 +1414,80 @@ public:
         
         return mem[node];
     }
+    
+    /* Surrounded Regions
+     Given a 2D board containing 'X' and 'O', capture all regions surrounded by 'X'.
+     
+     A region is captured by flipping all 'O's into 'X's in that surrounded region .
+     
+     For example,
+     X X X X
+     X O O X
+     X X O X
+     X O X X
+     After running your function, the board should be:
+     
+     X X X X
+     X X X X
+     X X X X
+     X O X X
+     */
+    void solve(vector<vector<char>> &board) {
+        if (board.empty() || board[0].empty())
+            return;
+        int row = board.size();
+        int col = board[0].size();
+        if (row <= 2 || col <= 2)
+            return;
+        vector<vector<bool> > mask(row, vector<bool>(col, false));
+        vector<pair<int, int> > seeds;
+        
+        // check first column and last column
+        for (int r = 0; r < row; r++) {
+            if (board[r][0] == 'O')
+                seeds.push_back(pair<int, int>(r,0));
+            if (board[r][col-1] == 'O')
+                seeds.push_back(pair<int, int>(r,col-1));
+        }
+        // check first and last row
+        for (int c = 0; c < col; c++) {
+            if (board[0][c] == 'O')
+                seeds.push_back(pair<int, int>(0,c));
+            if (board[row-1][c] == 'O')
+                seeds.push_back(pair<int, int>(row-1, c));
+        }
+        
+        // propagate seeds to inside
+        while (!seeds.empty()) {
+            pair<int,int> pos = seeds.back();
+            seeds.pop_back();
+            int rr = pos.first;
+            int cc = pos.second;
+            // if (rr,cc) has not been handled
+            if (!mask[rr][cc]) {
+                mask[rr][cc] = true;
+                // check neighbors
+                if (rr > 0 && board[rr-1][cc] == 'O' && mask[rr-1][cc] == false)
+                    seeds.push_back(pair<int, int>(rr-1,cc));
+                if (rr < row-1 && board[rr+1][cc] == 'O' && mask[rr+1][cc] == false)
+                    seeds.push_back(pair<int, int>(rr+1,cc));
+                if (cc > 0 && board[rr][cc-1] == 'O' && mask[rr][cc-1] == false)
+                    seeds.push_back(pair<int, int>(rr, cc-1));
+                if (cc < col-1 && board[rr][cc+1] == 'O' && mask[rr][cc+1] == false)
+                    seeds.push_back(pair<int, int>(rr, cc+1));
+            }
+        }
+        
+        // change board
+        for (int r = 0; r < row; r++)
+            for (int c = 0; c < col; c++)
+                if (mask[r][c])
+                    board[r][c] = 'O';
+                else
+                    board[r][c] = 'X';
+        
+        return;
+    }
 };
 
 template <class T>
