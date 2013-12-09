@@ -1488,6 +1488,42 @@ public:
         
         return;
     }
+    
+    /* Pascal's Triangle
+     Given numRows, generate the first numRows of Pascal's triangle.
+     
+     For example, given numRows = 5,
+     Return
+     
+     [
+     [1],
+     [1,1],
+     [1,2,1],
+     [1,3,3,1],
+     [1,4,6,4,1]
+     ]
+     */
+    vector<vector<int> > generate(int numRows) {
+        vector<vector<int> > p;
+        if (numRows == 0)
+            return p;
+        p.push_back(vector<int>(1,1));
+        if (numRows == 1)
+            return p;
+        
+        for (int i = 1; i < numRows; i++) {
+            vector<int> tmp;
+            // first element is always 1
+            tmp.push_back(1);
+            for (int j = 1; j < i; j++)
+                tmp.push_back(p[i-1][j-1]+p[i-1][j]);
+            tmp.push_back(1);
+            p.push_back(tmp);
+        }
+        
+        return p;
+    }
+
 };
 
 template <class T>
