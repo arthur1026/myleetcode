@@ -1524,6 +1524,32 @@ public:
         return p;
     }
 
+    /* Pascal's Triangle II 
+     Given an index k, return the kth row of the Pascal's triangle.
+     
+     For example, given k = 3,
+     Return [1,3,3,1].
+     
+     Note:
+     Could you optimize your algorithm to use only O(k) extra space?
+     */
+    vector<int> getRow(int rowIndex) {
+        vector<int> p;
+        p.push_back(1);
+        if (rowIndex == 0)
+            return p;
+        for (int i = 1; i <= rowIndex; i++) {
+            vector<int> tmp;
+            // first element is always 1
+            tmp.push_back(1);
+            for (int j = 1; j < i; j++)
+                tmp.push_back(p[j-1]+p[j]);
+            tmp.push_back(1);
+            p = tmp;
+        }
+        return p;
+    }
+
 };
 
 template <class T>
