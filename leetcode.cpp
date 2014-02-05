@@ -1668,6 +1668,39 @@ public:
         return profit;
     }
     
+    /* Balanced Binary Tree 
+    Given a binary tree, determine if it is height-balanced.
+
+    For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+    */
+    unordered_map<TreeNode*, int> mem;
+    bool isBalanced(TreeNode *root) {
+        mem.clear();
+        int maxD = getDepth(root);
+        return isBalanced_sub(root);
+    }
+    int getDepth(TreeNode* root) {
+        if (!root)
+            return 0;
+
+        if (!mem.count(root)) {
+            int left_d = (root->left) ? getDepth(root->left) : 0;
+            int right_d = (root->right) ? getDepth(root->right) : 0;
+            mem[root] = 1 + max(left_d, right_d);
+        }
+        
+        return mem[root];
+    }
+    bool isBalanced_sub(TreeNode* root) {
+        if (!root)
+            return true;
+        int left_d = (root->left) ? mem[root->left] : 0;
+        int right_d = (root->right) ? mem[root->right] : 0;
+        if (abs(left_d - right_d) <= 1)
+            return (isBalanced_sub(root->left) && isBalanced_sub(root->right));
+        else
+            return false;
+    }
 
 
 };
