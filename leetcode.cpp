@@ -1720,6 +1720,36 @@ public:
         else
             return (root->left) ? 1+left_d : 1+right_d;
     }
+    
+    /* Rotate Image
+    You are given an n x n 2D matrix representing an image.
+
+    Rotate the image by 90 degrees (clockwise).
+
+    Follow up:
+      Could you do this in-place? YES!
+    */
+    void rotate(vector<vector<int> > &matrix) {
+        int n = matrix.size();
+        if (n <= 1)
+            return;
+        // transpose
+        for (int r = 0; r < n; r++)
+            for (int c = r; c < n; c++) {
+                if (r == c)
+                    continue;
+                int tmp = matrix[r][c];
+                matrix[r][c] = matrix[c][r];
+                matrix[c][r] = tmp;
+        }
+        // do a horizontal mirror
+        for (int c = 0; c < n/2; c++)
+            for (int r = 0; r < n; r++) {
+                int tmp = matrix[r][n-c-1];
+                matrix[r][n-c-1] = matrix[r][c];
+                matrix[r][c] = tmp;
+        }
+    }
 };
 
 template <class T>
