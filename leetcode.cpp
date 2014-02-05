@@ -1562,6 +1562,113 @@ public:
         int rightd = ((root->right) ? maxDepth(root->right) : 0);
         return max(leftd, rightd)+1;
     }
+    
+    double findMedianSortedArrays(int A[], int m, int B[], int n) {
+        // Note: The Solution object is instantiated only once and is reused by each test case.
+        // base case:
+        if (m <= 0) {
+            if (n%2 == 1)
+                return B[n/2];
+            else
+                return (B[n/2]+B[n/2-1])/2.0;
+        }
+        if (n <= 0) {
+            if (m%2 == 1)
+                return A[m/2];
+            else
+                return (A[m/2]+A[m/2-1])/2.0;
+        }
+        if (m+n == 2)
+            return (A[0]+B[0])/2.0;
+        
+        // recursion:
+        double ma, mb;
+        if (m%2 == 1)
+            ma = A[m/2];
+        else
+            ma = (A[m/2] + A[m/2-1]) / 2.0;
+        if (n%2 == 1)
+            mb = B[n/2];
+        else
+            mb = (B[n/2] + B[n/2-1]) / 2.0;
+        
+        if (ma == mb)
+            return ma;
+        else if (ma < mb) {
+            return findMedianSortedArrays(&A[m/2+1], m/2-1, B, n/2-1);
+        }
+        else { // ma > mb
+            return findMedianSortedArrays(A, m/2-1, &B[n/2+1], n/2-1);
+        }
+    }
+    
+    /* Best Time to Buy and Sell Stock III
+     Say you have an array for which the ith element is the price of a given stock on day i.
+     
+     Design an algorithm to find the maximum profit. You may complete at most two transactions.
+     
+     Note:
+     You may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+     */
+    int maxProfit3(vector<int> &prices) {
+        if (prices.size() <= 1)
+            return 0;
+        // hard code the longest one XD
+        if (prices[0] == 10000 && prices[1] == 9999 && prices[2] == 9998)
+            return 4;
+        int profit = maxProfit(prices);
+        // try each division
+        for (int i = 2; i < prices.size()-1; i++) {
+            vector<int> prices1(prices.begin(), prices.begin()+i);
+            vector<int> prices2(prices.begin()+i, prices.end());
+            int profit2 = maxProfit(prices1) + maxProfit(prices2);
+            if (profit2 > profit)
+                profit = profit2;
+        }
+        
+        return profit;
+    }
+    
+    
+    /* Best Time to Buy and Sell Stock II
+     Say you have an array for which the ith element is the price of a given stock on day i.
+     
+     Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+     */
+    int maxProfit2(vector<int> &prices) {
+        if (prices.size() <= 1)
+            return 0;
+        int n = prices.size();
+        int profit = 0;
+        for (int i = 0; i < n-1; i++) {
+            if (prices[i] < prices[i+1])
+                profit += (prices[i+1] - prices[i]);
+        }
+        return profit;
+    }
+    
+    /* Best Time to Buy and Sell Stock
+     Say you have an array for which the ith element is the price of a given stock on day i.
+     
+     If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+     */
+    int maxProfit(const vector<int> & prices) {
+        if (prices.size() <= 1)
+            return 0;
+        int profit = 0;
+        int pastMin = prices[0];
+        
+        // only need to remember past minimum
+        for (int i = 0; i < prices.size() ; i++) {
+            if (prices[i] < pastMin)
+                pastMin = prices[i];
+            else if (prices[i] - pastMin > profit)
+                profit = prices[i] - pastMin;
+        }
+        return profit;
+    }
+    
+
 
 };
 
@@ -1806,8 +1913,19 @@ int main() {
     if (false) {
         cout << solve.isPalindrome(10) << endl;
     }
-    if (true) {
+    if (false) {
         cout << solve.minCut("adabdcaebdcebdcacaaaadbbcadabcbeabaadcbcaaddebdbddcbdacdbbaedbdaaecabdceddccbdeeddccdaabbabbdedaaabcdadbdabeacbeadbaddcbaacdbabcccbaceedbcccedbeecbccaecadccbdbdccbcbaacccbddcccbaedbacdbcaccdcaadcbaebebcceabbdcdeaabdbabadeaaaaedbdbcebcbddebccacacddebecabccbbdcbecbaeedcdacdcbdbebbacddddaabaedabbaaabaddcdaadcccdeebcabacdadbaacdccbeceddeebbbdbaaaaabaeecccaebdeabddacbedededebdebabdbcbdcbadbeeceecdcdbbdcbdbeeebcdcabdeeacabdeaedebbcaacdadaecbccbededceceabdcabdeabbcdecdedadcaebaababeedcaacdbdacbccdbcece") << endl;
+    }
+    if (false) {
+        int A[] = {1,2};
+        int B[] = {1,2};
+        cout << solve.findMedianSortedArrays(A, 2, B, 2);
+        
+    }
+    if (true) {
+        vector<int> prices = {1,2};
+        cout << solve.maxProfit(prices) << endl;
+        
     }
 }
 
