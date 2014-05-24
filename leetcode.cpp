@@ -1805,6 +1805,100 @@ public:
         
         return newhead;
     }
+    
+    /* Reverse Words in a String
+     Given an input string, reverse the string word by word.
+     
+     For example,
+     Given s = "the sky is blue",
+     return "blue is sky the".
+     
+     Clarification:
+     What constitutes a word?
+     A sequence of non-space characters constitutes a word.
+     Could the input string contain leading or trailing spaces?
+     Yes. However, your reversed string should not contain leading or trailing spaces.
+     How about multiple spaces between two words?
+     Reduce them to a single space in the reversed string.
+     */
+    void reverseWords(string &s) {
+        vector<string> tokens;
+        
+        // parse s into tokens
+        // useful functions for string:
+        // string.substr(pos, len)
+        int st = -1;
+        
+        for (int i = 0; i < s.length(); ++i) {
+            char c = s[i];
+            if (c == ' ') {
+                if (st == -1)   // continue searching for start
+                    continue;
+                else {    // have already found a token
+                    tokens.push_back(s.substr(st, i-st));
+                    st = -1;
+                }
+            }
+            else {
+                if (st == -1)
+                    st = i;
+                else
+                    continue;
+            }
+        }
+        
+        // take care of last token
+        if (st > -1)
+            tokens.push_back(s.substr(st, s.length()-st));
+        
+        if (tokens.size() == 0) {
+            s = "";
+            return;
+        }
+        
+        // construct reversed string by tokens
+        stringstream ss;
+        for (int i = tokens.size()-1; i > 0; i--)
+            ss << tokens[i] << " ";
+        ss << tokens[0];
+        
+        s = ss.str();
+    }
+    
+    /* Search in Rotated Sorted Array
+     Suppose a sorted array is rotated at some pivot unknown to you beforehand.
+     
+     (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+     
+     You are given a target value to search. If found in the array return its index, otherwise return -1.
+     
+     You may assume no duplicate exists in the array.
+     */
+    int search(int A[], int n, int target) {
+        // similar to binary search:
+        // if it is a non-rotated: binary search
+        // it it IS a rotated: search in both subarray
+        // need to take care of the offset
+        
+        // base case:
+        if (n == 0)
+            return -1;
+        if (n == 1)
+            return (A[0] == target) ? 0 : -1;
+        if (n == 2) {
+            if (A[0] == target)
+                return 0;
+            else if (A[1] ==target)
+                return 1;
+            else
+                return -1;
+        }
+        
+        // recursion step: TODO
+        
+        
+        
+    }
 
 };
 
