@@ -1959,7 +1959,58 @@ public:
             q.pop();
         }
     }
-
+    
+    /* ZigZag Conversion
+     The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
+     
+     P   A   H   N
+     A P L S I I G
+     Y   I   R
+     And then read line by line: "PAHNAPLSIIGYIR"
+     Write the code that will take a string and make this conversion given a number of rows:
+     
+     string convert(string text, int nRows);
+     convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
+     
+     */
+    string convert(string s, int nRows) {
+        if (nRows == 1)
+            return s;
+        // construct string matrix
+        vector< vector<char> > m(nRows, vector<char>(s.size(), ' '));
+        // convert s to m
+        int index = 0;
+        int c = 0;
+        int r = 0;
+        while (index < s.size()) {
+            m[r][c] = s[index++];
+            if (index >= s.size())
+                break;
+            
+            // move to next valid location
+            if (!(c%(nRows-1))) { // at N*nRows, should be vertically down
+                if (r < nRows-1)    // not at bottom
+                    r++;
+                else {    // at bottom
+                    c++;
+                    r--;
+                }
+            }
+            else {  // at intermediate columns
+                c++;
+                r--;
+            }
+        }
+        // convert matrix to output
+        string output;
+        for (int r = 0; r < nRows; r++)
+            for (int c = 0; c < s.size(); c++) {
+                if (m[r][c] != ' ')
+                    output.push_back(m[r][c]);
+            }
+        
+        return output;
+    }
 };
 
 template <class T>
