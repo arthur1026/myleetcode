@@ -1899,6 +1899,64 @@ public:
         
         
     }
+    
+    /* Flatten Binary Tree to Linked List
+     Given a binary tree, flatten it to a linked list in-place.
+     
+     For example,
+     Given
+     
+     1
+     / \
+     2   5
+     / \   \
+     3   4   6
+     The flattened tree should look like:
+     1
+     \
+     2
+     \
+     3
+     \
+     4
+     \
+     5
+     \
+     6
+     
+     Hints:
+     If you notice carefully in the flattened tree, each node's right child points to the next node of a pre-order traversal.
+     */
+    void preorder(TreeNode* root, queue<TreeNode*>& q) {
+        if (!root)
+            return;
+        q.push(root);
+        if (root->left)
+            preorder(root->left, q);
+        if (root->right)
+            preorder(root->right, q);
+    }
+    
+    void flatten(TreeNode *root) {
+        if (!root || (!root->left && !root->right))
+            return;
+        queue<TreeNode*> q;
+        preorder(root, q);
+        
+        // construct the result
+        TreeNode* tree_ptr = q.front();
+        q.pop();
+        tree_ptr->left = NULL;
+        tree_ptr->right = NULL;
+        
+        while (!q.empty()) {
+            tree_ptr->right = q.front();
+            tree_ptr = q.front();
+            tree_ptr->left = NULL;
+            tree_ptr->right = NULL;
+            q.pop();
+        }
+    }
 
 };
 
