@@ -3,6 +3,8 @@
 #include <vector>
 #include <list>
 #include <unordered_set>
+#include <queue>
+#include <algorithm>
 #include <map>
 #include <unordered_map>
 #include <sstream>
@@ -75,7 +77,7 @@ public:
 	   Return all such possible sentences.
 	*/
 	// method: recursion + mem (dp)
-	vector<string> wordBreak2_recursion(string s, unordered_set<string> &dict, map<string, vector<string>>& mem) {
+	vector<string> wordBreak2_recursion(string s, unordered_set<string> &dict, map<string, vector<string> >& mem) {
 		if (mem.find(s) != mem.end())
 		{
 			return mem[s];
@@ -101,7 +103,7 @@ public:
 		return result;
 	}
 	vector<string> wordBreak2(string s, unordered_set<string> &dict) {
-		map<string, vector<string>> mem;
+		map<string, vector<string> > mem;
 
 		return wordBreak2_recursion(s, dict, mem);
 	}
@@ -1287,7 +1289,7 @@ public:
      ["a","a","b"]
      ]
      */
-    vector<vector<string>> partition(string s) {
+    vector<vector<string> > partition(string s) {
         vector<vector<string> > result;
         // base case:
         if (s.size() == 0)
@@ -1432,7 +1434,7 @@ public:
      X X X X
      X O X X
      */
-    void solve(vector<vector<char>> &board) {
+    void solve(vector<vector<char> > &board) {
         if (board.empty() || board[0].empty())
             return;
         int row = board.size();
@@ -1975,36 +1977,57 @@ typedef MyNode<int> intNode;
  get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
  set(key, value) - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.
  */
-
-/* thinking:
- 1. what data structure available: array, linked list, binary tree; queue, stack, hash_table, map
- 2. what performance do I want: best: constant time get; constant time set
- 3. how to keep track of usage
- 
- my idea: use a linked list to track usage; meanwhile, use hash table(or map for simple implementation) to access data
- */
 class LRUCache{
 public:
     LRUCache(int capacity) {
-        cap = capacity;
-        head = NULL;
-        tail = NULL;
+        capacity_ = capacity;
     }
     
     int get(int key) {
-        // check if exist
-            // if not, return -1;
-            // if yes, adjust list and map
-        return 0;
+        // if key does not exist
+        if (!key_value_.count(key))
+            return -1;
+        
+        // if key exists, move it to the end of list
+        auto it = key_iterator_[key];
+        cache_.erase(it);
+        cache_.push_back(key);
+        // update key_iterator pair
+        key_iterator_[key] = --cache_.end();
+        
+        // return the value
+        return key_value_[key];
     }
     
     void set(int key, int value) {
-        
+        if (key_value_.count(key)) {    // if key exists
+            get(key);
+            key_value_[key] = value;
+        }
+        else {  // if key does not exist
+            // insert into table
+            key_value_[key] = value;
+            // insert into cache
+            cache_.push_back(key);
+            // insert into key & iterator pair
+            key_iterator_[key] = --cache_.end();
+            
+            if (cache_.size() > capacity_) {
+                // remove from cache
+                int front_key = cache_.front();
+                cache_.pop_front();
+                // remove from key_value pair
+                key_value_.erase(front_key);
+                // remove from key_iterator pair
+                key_iterator_.erase(front_key);
+            }
+        }
     }
 private:
-    intNode *head, *tail;
-    map<int, intNode> mem;
-    int cap;
+    int capacity_;
+    list<int> cache_;
+    unordered_map<int, int> key_value_;
+    unordered_map<int, list<int>::iterator> key_iterator_;
 };
 
 void intSwap(int& a, int& b) {
@@ -2210,10 +2233,19 @@ int main() {
         cout << solve.findMedianSortedArrays(A, 2, B, 2);
         
     }
-    if (true) {
+    if (false) {
         vector<int> prices = {1,2};
         cout << solve.maxProfit(prices) << endl;
         
+    }
+    if (true) {
+        cout << "Testing LRUCache" << endl;
+        LRUCache cache(1);
+        cache.set(2,1);
+        cout << "cache.get(2) = " << cache.get(2) << endl;
+        cache.set(3,2);
+        cout << "cache.get(2) = " << cache.get(2) << endl;
+        cout << "cache.get(3) = " << cache.get(3) << endl;
     }
 }
 
