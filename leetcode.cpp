@@ -2027,6 +2027,31 @@ public:
         return mem[n];
     }
     
+    /* Plus One 
+     Given a non-negative number represented as an array of digits, plus one to the number.
+     
+     The digits are stored such that the most significant digit is at the head of the list.
+     */
+    vector<int> plusOne(vector<int> &digits) {
+        vector<int> end_to_front;
+        int carry = 0;
+        int plus_one = 1;
+        for (int i = (int)digits.size()-1; i >= 0; i--) {
+            int sum = digits[i] + carry + plus_one;
+            plus_one = 0;
+            carry = 0;
+            if (sum >= 10) {
+                carry = 1;
+                sum -= 10;
+            }
+            end_to_front.push_back(sum);
+        }
+        if (carry)
+            end_to_front.push_back(1);
+        vector<int> front_to_end(end_to_front.rbegin(), end_to_front.rend());
+        return front_to_end;
+    }
+    
 };
 
 template <class T>
