@@ -2090,6 +2090,39 @@ public:
             return false;
     }
     
+    /* Binary Tree Inorder Traversal
+     Given a binary tree, return the inorder traversal of its nodes' values.
+     
+     For example:
+     Given binary tree {1,#,2,3},
+     1
+     \
+     2
+     /
+     3
+     return [1,3,2].
+     */
+    vector<int> inorderTraversal(TreeNode *root) {
+        if (!root)
+            return vector<int>();
+        
+        vector<int> results;
+        if (root->left) {
+            vector<int> tmp = inorderTraversal(root->left);
+            for (int i = 0; i < tmp.size(); i++)
+                results.push_back(tmp[i]);
+        }
+        results.push_back(root->val);
+        if (root->right) {
+            vector<int> tmp = inorderTraversal(root->right);
+            for (int i = 0; i < tmp.size(); i++)
+                results.push_back(tmp[i]);
+        }
+        
+        return results;
+    }
+    
+    
 };
 
 template <class T>
