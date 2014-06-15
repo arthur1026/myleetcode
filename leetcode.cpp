@@ -2052,6 +2052,44 @@ public:
         return front_to_end;
     }
     
+    /* Symmetric Tree
+     Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+     
+     For example, this binary tree is symmetric:
+     
+     1
+     / \
+     2   2
+     / \ / \
+     3  4 4  3
+     But the following is not:
+     1
+     / \
+     2   2
+     \   \
+     3    3
+     */
+    bool IsSymmetric_recursion(TreeNode* t1, TreeNode* t2) {
+        if (!t1 && !t2)
+            return true;
+        else if (t1 && t2) {
+            return (t1->val == t2->val &&
+                    IsSymmetric_recursion(t1->left, t2->right) &&
+                    IsSymmetric_recursion(t1->right, t2->left));
+        }
+        else
+            return false;
+    }
+    
+    bool isSymmetric(TreeNode *root) {
+        if (!root || (!root->left && !root->right))
+            return true;
+        if (root->left && root->right)
+            return IsSymmetric_recursion(root->left, root->right);
+        else
+            return false;
+    }
+    
 };
 
 template <class T>
