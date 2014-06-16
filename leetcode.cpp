@@ -2122,6 +2122,151 @@ public:
         return results;
     }
     
+    /* Construct Binary Tree from Preorder and Inorder Traversal
+     Given preorder and inorder traversal of a tree, construct the binary tree.
+     
+     Notice: but this would give "Memory limit exceeds error"
+     */
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
+        if (preorder.empty())
+            return NULL;
+        
+        int val = preorder[0];
+        TreeNode* new_tree = new TreeNode(val);
+        
+        vector<int> left_preorder;
+        vector<int> left_inorder;
+        vector<int> right_preorder;
+        vector<int> right_inorder;
+        // preorder: root, left1, left2, right1, right2
+        // inorder: left1, left2, root, right1, right2
+        int i = 0;
+        // set up left list
+        for (; i < inorder.size(); i++) {
+            if (inorder[i] != val) {
+                left_inorder.push_back(inorder[i]);
+                left_preorder.push_back(preorder[i+1]);
+            }
+            else
+                break;
+        }
+        i++;
+        // set up right list
+        for(; i < inorder.size(); i++) {
+            right_inorder.push_back(inorder[i]);
+            right_preorder.push_back(preorder[i]);
+        }
+        
+        preorder.clear();
+        inorder.clear();
+        
+        new_tree->left = buildTree(left_preorder, left_inorder);
+        new_tree->right = buildTree(right_preorder, right_inorder);
+        
+        return new_tree;
+    }
+    
+    /* Binary Tree Level Order Traversal
+     Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+     
+     For example:
+     Given binary tree {3,9,20,#,#,15,7},
+     3
+     / \
+     9  20
+     /  \
+     15   7
+     return its level order traversal as:
+     [
+     [3],
+     [9,20],
+     [15,7]
+     ]
+     */
+    vector<vector<int> > levelOrder(TreeNode *root) {
+        vector<vector<int> > output;
+        if (!root)
+            return output;
+        
+        list<TreeNode*> current_level;
+        list<TreeNode*> next_level;
+        vector<int> level_value;
+        
+        current_level.push_back(root);
+        
+        while (current_level.size()) {
+            
+            while (current_level.size()) {
+                level_value.push_back(current_level.front()->val);
+                if (current_level.front()->left)
+                    next_level.push_back(current_level.front()->left);
+                if (current_level.front()->right)
+                    next_level.push_back(current_level.front()->right);
+                current_level.pop_front();
+            }
+            
+            output.push_back(level_value);
+            current_level = next_level;
+            next_level.clear();
+            level_value.clear();
+        }
+        
+        return output;
+    }
+    
+    /* Binary Tree Level Order Traversal II
+     Given a binary tree, return the bottom-up level order traversal of its nodes' values. (ie, from left to right, level by level from leaf to root).
+     
+     For example:
+     Given binary tree {3,9,20,#,#,15,7},
+     3
+     / \
+     9  20
+     /  \
+     15   7
+     return its bottom-up level order traversal as:
+     [
+     [15,7],
+     [9,20],
+     [3]
+     ]
+     */
+    vector<vector<int> > levelOrderBottom(TreeNode *root) {
+        vector<vector<int> > output;
+        if (!root)
+            return output;
+        
+        list<TreeNode*> current_level;
+        list<TreeNode*> next_level;
+        vector<int> level_value;
+        
+        current_level.push_back(root);
+        
+        while (current_level.size()) {
+            
+            while (current_level.size()) {
+                level_value.push_back(current_level.front()->val);
+                if (current_level.front()->left)
+                    next_level.push_back(current_level.front()->left);
+                if (current_level.front()->right)
+                    next_level.push_back(current_level.front()->right);
+                current_level.pop_front();
+            }
+            
+            output.push_back(level_value);
+            current_level = next_level;
+            next_level.clear();
+            level_value.clear();
+        }
+        
+        vector<vector<int> > reverse_output;
+        for (int i = output.size()-1; i >= 0; i --) {
+            reverse_output.push_back(output[i]);
+        }
+        
+        return reverse_output;
+    }
+    
     
 };
 
