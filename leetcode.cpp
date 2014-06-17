@@ -2267,6 +2267,74 @@ public:
         return reverse_output;
     }
     
+    /* 3Sum Closest
+     Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+     
+     For example, given array S = {-1 2 1 -4}, and target = 1.
+     
+     The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+     */
+    int threeSumClosest(vector<int> &num, int target) {
+        int closest = num[0] + num[1] + num[2];
+        int diff = abs(target - closest);
+        int n = num.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i+1; j < n; j++) {
+                for (int k = j+1; k < n; k++) {
+                    int local_sum = num[i] + num[j] + num[k];
+                    if (local_sum == target)
+                        return target;
+                    else if (abs(local_sum - target) < diff) {
+                        closest = local_sum;
+                        diff = abs(closest - target);
+                    }
+                }
+            }
+        }
+        
+        return closest;
+    }
+    
+    /* Remove Duplicates from Sorted Array
+     Given a sorted array, remove the duplicates in place such that each element appear only once and return the new length.
+     
+     Do not allocate extra space for another array, you must do this in place with constant memory.
+     
+     For example,
+     Given input array A = [1,1,2],
+     
+     Your function should return length = 2, and A is now [1,2].
+     */
+    int removeDuplicates(int A[], int n) {
+        if (n <= 1)
+            return n;
+        int write = 1;
+        for (int i = 1; i < n; i++) {
+            if (A[write-1] != A[i])
+                A[write++] = A[i];
+        }
+        return write;
+    }
+    
+    /* Remove Element
+     Given an array and a value, remove all instances of that value in place and return the new length.
+     
+     The order of elements can be changed. It doesn't matter what you leave beyond the new length.
+     */
+    int removeElement(int A[], int n, int elem) {
+        for (int i = 0; i < n; i++) {
+            if (A[i] == elem) {
+                // search for available position from the end
+                while (A[n-1] == elem)
+                    n--;
+                if (i < n-1)
+                    swap(A[i], A[n-1]);
+            }
+        }
+        
+        return n;
+    }
+
     
 };
 
