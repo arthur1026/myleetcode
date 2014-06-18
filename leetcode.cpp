@@ -2335,7 +2335,170 @@ public:
         return n;
     }
 
+    /* Candy
+     There are N children standing in a line. Each child is assigned a rating value.
+     
+     You are giving candies to these children subjected to the following requirements:
+     
+     Each child must have at least one candy.
+     Children with a higher rating get more candies than their neighbors.
+     What is the minimum candies you must give?
+     */
+    // TODO(luch): understand and rewrite
+    int candy(vector<int> &ratings) {
+        // Note: The Solution object is instantiated only once and is reused by each test case.
+        int nCandyCnt = 0;///Total candies
+        int nSeqLen = 0;  /// Continuous ratings descending sequence length
+        int nPreCanCnt = 1; /// Previous child's candy count
+        int nMaxCntInSeq = nPreCanCnt;
+        if(ratings.begin() != ratings.end())
+        {
+            nCandyCnt++;//Counting the first child's candy.
+            for(vector<int>::iterator i = ratings.begin()+1; i!= ratings.end(); i++)
+            {
+                // if r[k]>r[k+1]>r[k+2]...>r[k+n],r[k+n]<=r[k+n+1],
+                // r[i] needs n-(i-k)+(Pre's) candies(k<i<k+n)
+                // But if possible, we can allocate one candy to the child,
+                // and with the sequence extends, add the child's candy by one
+                // until the child's candy reaches that of the prev's.
+                // Then increase the pre's candy as well.
+                
+                // if r[k] < r[k+1], r[k+1] needs one more candy than r[k]
+                //
+                if(*i < *(i-1))
+                {
+                    //Now we are in a sequence
+                    nSeqLen++;
+                    if(nMaxCntInSeq == nSeqLen)
+                    {
+                        //The first child in the sequence has the same candy as the prev
+                        //The prev should be included in the sequence.
+                        nSeqLen++;
+                    }
+                    nCandyCnt+= nSeqLen;
+                    nPreCanCnt = 1;
+                }
+                else
+                {
+                    if(*i > *(i-1))
+                    {
+                        nPreCanCnt++;
+                    }
+                    else
+                    {
+                        nPreCanCnt = 1;
+                    }
+                    nCandyCnt += nPreCanCnt;
+                    nSeqLen = 0;
+                    nMaxCntInSeq = nPreCanCnt;
+                }   
+            }
+        }
+        return nCandyCnt;
+    }
     
+    /* Triangle 
+     Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.
+     
+     For example, given the following triangle
+     [
+     [2],
+     [3,4],
+     [6,5,7],
+     [4,1,8,3]
+     ]
+     The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+     
+     Note:
+     Bonus point if you are able to do this using only O(n) extra space, where n is the total number of rows in the triangle.
+     */
+    int minimumTotal(vector<vector<int> > &triangle) {
+        vector<int> min_level;
+        min_level.push_back(triangle[0][0]);
+        
+        for (int row = 1; row < triangle.size(); row++) {
+            vector<int> new_min_level;
+            for (int col = 0; col < triangle[row].size(); col++) {
+                if (col == 0)
+                    new_min_level.push_back(min_level[0] + triangle[row][col]);
+                else if (col == triangle[row].size()-1)
+                    new_min_level.push_back(min_level[min_level.size()-1] + triangle[row][col]);
+                else
+                    new_min_level.push_back(min(min_level[col-1], min_level[col]) + triangle[row][col]);
+            }
+            min_level = new_min_level;
+        }
+        
+        // find minimal on min_level
+        return *min_element(min_level.begin(), min_level.end());
+    }
+    
+    /* Sum Root to Leaf Numbers
+     Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
+     
+     An example is the root-to-leaf path 1->2->3 which represents the number 123.
+     
+     Find the total sum of all root-to-leaf numbers.
+     
+     For example,
+     
+     1
+     / \
+     2   3
+     The root-to-leaf path 1->2 represents the number 12.
+     The root-to-leaf path 1->3 represents the number 13.
+     
+     Return the sum = 12 + 13 = 25.
+     */
+    // return leaf-to-root path
+    vector<vector<int> > AllPath(TreeNode* root) {
+        vector<vector<int> > path;
+        // base case
+        if (!root->left && !root->right) {
+            vector<int> tmp;
+            tmp.push_back(root->val);
+            path.push_back(tmp);
+            return path;
+        }
+        if (root->left) {
+            vector<vector<int> > left_path = AllPath(root->left);
+            // add results to pathes
+            for (int i = 0; i < left_path.size(); i++) {
+                left_path[i].push_back(root->val);
+                path.push_back(left_path[i]);
+            }
+        }
+        if (root->right) {
+            vector<vector<int> > right_path = AllPath(root->right);
+            for (int i = 0; i < right_path.size(); i++) {
+                right_path[i].push_back(root->val);
+                path.push_back(right_path[i]);
+            }
+        }
+        return path;
+    }
+    
+    int LeafToRootPathToNumber(const vector<int>& path) {
+        int base = 1;
+        int num = 0;
+        for (int i = 0; i < path.size(); i++) {
+            num += path[i] * base;
+            base *= 10;
+        }
+        return num;
+    }
+    
+    int sumNumbers(TreeNode *root) {
+        if (!root)
+            return 0;
+        
+        vector<vector<int> > all_path = AllPath(root);
+        int sum = 0;
+        for (int i = 0; i < all_path.size(); i++)
+            sum += LeafToRootPathToNumber(all_path[i]);
+        
+        return sum;
+    }
 };
 
 template <class T>
