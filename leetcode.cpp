@@ -2499,6 +2499,415 @@ public:
         
         return sum;
     }
+    
+    /* Search for a Range
+     Given a sorted array of integers, find the starting and ending position of a given target value.
+     
+     Your algorithm's runtime complexity must be in the order of O(log n).
+     
+     If the target is not found in the array, return [-1, -1].
+     
+     For example,
+     Given [5, 7, 7, 8, 8, 10] and target value 8,
+     return [3, 4].
+     */
+    // TODO(luch): Need a O(log n) algorithm!
+    vector<int> searchRange(int A[], int n, int target) {
+        int start = -1;
+        int end = -1;
+        for (int i = 0; i < n; i++) {
+            if (A[i] == target) {
+                if (start == -1) {
+                    start = i;
+                    end = i;
+                }
+                else
+                    end = i;
+            }
+            else if (A[i] > target)
+                break;
+        }
+        
+        vector<int> result;
+        result.push_back(start);
+        result.push_back(end);
+        
+        return result;
+    }
+    
+    /* Count and Say
+     The count-and-say sequence is the sequence of integers beginning as follows:
+     1, 11, 21, 1211, 111221, ...
+     
+     1 is read off as "one 1" or 11.
+     11 is read off as "two 1s" or 21.
+     21 is read off as "one 2, then one 1" or 1211.
+     Given an integer n, generate the nth sequence.
+     
+     Note: The sequence of integers will be represented as a string.
+     */
+    string countAndSay(int n) {
+        string prev;
+        string cur;
+        prev.push_back('1');
+        
+        if (n == 1)
+            return prev;
+        
+        for (int i = 2; i <= n; i++) {
+            cur.clear();
+            int count = 1;
+            char num = prev[0];
+            for (int j = 1; j < prev.size(); j++) {
+                if (prev[j] == num)
+                    count++;
+                else {
+                    cur.push_back('0'+count);
+                    cur.push_back(num);
+                    num = prev[j];
+                    count = 1;
+                }
+            }
+            // push for the last one
+            cur.push_back('0'+count);
+            cur.push_back(num);
+            
+            prev = cur;
+        }
+        
+        return prev;
+    }
+
+    /* Remove Duplicates from Sorted List II
+     Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list.
+     
+     For example,
+     Given 1->2->3->3->4->4->5, return 1->2->5.
+     Given 1->1->1->2->3, return 2->3.
+     */
+    void DeleteElements(ListNode* start, ListNode* end) {
+        if (!end || !start)
+            return;
+        
+        while (start != end) {
+            ListNode* node_to_delete = start;
+            start = start->next;
+            delete node_to_delete;
+        }
+        delete end;
+    }
+    
+    ListNode *deleteDuplicates(ListNode *head) {
+        if (!head || !head->next)
+            return head;
+        ListNode* tail = head;
+        ListNode* duplicate_start = head;
+        ListNode* duplicate_end = NULL;
+        ListNode* prev = head;
+        ListNode* cur = head->next;
+        int count = 1;
+        
+        while (cur) {
+            if (prev->val == cur->val) {
+                count++;
+                duplicate_end = cur;
+            } else {
+                if (count >= 2) {
+                    if (duplicate_start == head) {
+                        head = cur;
+                        tail = cur;
+                    }
+                    else
+                        tail->next = cur;
+                    DeleteElements(duplicate_start, duplicate_end);
+                }
+                count = 1;
+                duplicate_start = cur;
+                duplicate_end = NULL;
+                if (cur->next) {
+                    if (cur->next->val != cur->val)
+                        tail = cur;
+                }
+            }
+            prev = cur;
+            cur = cur->next;
+        }
+        
+        if (duplicate_end) {
+            if (duplicate_start == head)
+                return NULL;
+            else {
+                DeleteElements(duplicate_start, duplicate_end);
+                tail->next = NULL;
+            }
+        }
+        
+        return head;
+    }
+    
+    /* Remove Duplicates from Sorted Array II
+     Follow up for "Remove Duplicates":
+     What if duplicates are allowed at most twice?
+     
+     For example,
+     Given sorted array A = [1,1,1,2,2,3],
+     
+     Your function should return length = 5, and A is now [1,1,2,2,3].
+     */
+    int removeDuplicates2(int A[], int n) {
+        if (!n)
+            return 0;
+        
+        int cur = 0;
+        int count = 1;
+        
+        for (int i = 1; i < n; i++) {
+            if (A[i] != A[cur]) {
+                cur++;
+                A[cur] = A[i];
+                count = 1;
+            } else {
+                if (count < 2) {
+                    cur++;
+                    A[cur] = A[i];
+                }
+                count++;
+            }
+        }
+        
+        return cur+1;
+    }
+    
+    /* Maximum Subarray
+     Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+     
+     For example, given the array [−2,1,−3,4,−1,2,1,−5,4],
+     the contiguous subarray [4,−1,2,1] has the largest sum = 6.
+     */
+    int maxSubArray(int A[], int n) {
+        if (!n)
+            return 0;
+        
+        int maxsum = A[0];
+        int accumulate = A[0];
+        
+        for (int i = 1; i < n; i++) {
+            if (accumulate < 0)
+                accumulate = 0;
+            accumulate += A[i];
+            if (maxsum < accumulate)
+                maxsum = accumulate;
+        }
+        
+        return maxsum;
+    }
+    
+    /* Binary Tree Zigzag Level Order Traversal
+     Given a binary tree, return the zigzag level order traversal of its nodes' values. (ie, from left to right, then right to left for the next level and alternate between).
+     
+     For example:
+     Given binary tree {3,9,20,#,#,15,7},
+     3
+     / \
+     9  20
+     /  \
+     15   7
+     return its zigzag level order traversal as:
+     [
+     [3],
+     [20,9],
+     [15,7]
+     ]
+     */
+    vector<vector<int> > zigzagLevelOrder(TreeNode *root) {
+        vector<vector<int> > result;
+        if (!root)
+            return result;
+        
+        vector<TreeNode*> agenda;
+        agenda.push_back(root);
+        bool left_to_right = true;
+        while(!agenda.empty()) {
+            vector<TreeNode*> next_level;
+            vector<int> cur_values;
+            for (int i = 0; i < agenda.size(); i++) {
+                TreeNode* cur = agenda[i];
+                cur_values.push_back(cur->val);
+                if (left_to_right) {
+                    if (cur->left)
+                        next_level.push_back(cur->left);
+                    if (cur->right)
+                        next_level.push_back(cur->right);
+                } else {
+                    if (cur->right)
+                        next_level.push_back(cur->right);
+                    if (cur->left)
+                        next_level.push_back(cur->left);
+                }
+            }
+            agenda.clear();
+            agenda.assign(next_level.rbegin(), next_level.rend());
+            left_to_right = !left_to_right;
+            result.push_back(cur_values);
+        }
+        
+        return result;
+    }
+    
+    /* Interleaving String
+     Given s1, s2, s3, find whether s3 is formed by the interleaving of s1 and s2.
+     
+     For example,
+     Given:
+     s1 = "aabcc",
+     s2 = "dbbca",
+     
+     When s3 = "aadbbcbcac", return true.
+     When s3 = "aadbbbaccc", return false.
+     */
+    bool isInterleave(string s1, string s2, string s3) {
+        int n1 = s1.length();
+        int n2 = s2.length();
+        int n3 = s3.length();
+        
+        if (n1 + n2 != n3)
+            return false;
+        
+        vector<vector<bool> > mem(n1+1, vector<bool>(n2+1, false));
+        
+        mem[0][0] = true;
+        // intialize first row: compare s2 with s3
+        for (int i = 0; i < n2; i++)
+            mem[0][i+1] = mem[0][i] && (s2[i] == s3[i]);
+        // intialize first column: compare s1 with s3
+        for (int i = 0; i < n1; i++)
+            mem[i+1][0] = mem[i][0] && (s1[i] == s3[i]);
+        
+        // dp step
+        for (int r = 0; r < n1; r++) {
+            for (int c = 0; c < n2; c++) {
+                mem[r+1][c+1] = (mem[r+1][c] && s2[c] == s3[r+c+1]) ||
+                (mem[r][c+1] && s1[r] == s3[r+c+1]);
+            }
+        }
+        
+        return mem[n1][n2];
+    }
+
+    /* Reverse Linked List II
+     Reverse a linked list from position m to n. Do it in-place and in one-pass.
+     
+     For example:
+     Given 1->2->3->4->5->NULL, m = 2 and n = 4,
+     
+     return 1->4->3->2->5->NULL.
+     
+     Note:
+     Given m, n satisfy the following condition:
+     1 ≤ m ≤ n ≤ length of list.
+     */
+    ListNode *reverseBetween(ListNode *head, int m, int n) {
+        if (!head)
+            return head;
+        if (m == n)
+            return head;
+        ListNode* pre_start = head;
+        ListNode* cur = head;
+        int i = 1;
+        // seek start
+        if (m > 1) {
+            cur = head->next;
+            i = 2;
+            while (i < m) {
+                pre_start = pre_start->next;
+                cur = cur->next;
+                i++;
+            }
+        }
+        ListNode* start = cur;
+        ListNode* prev = start;
+        cur = start->next;
+        i++;
+        ListNode* end = NULL;
+        ListNode* endnext = NULL;
+        while (i <= n) {
+            if (i == n) {
+                end = cur;
+                endnext = end->next;
+            }
+            ListNode* next = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = next;
+            
+            i++;
+        }
+        start->next = endnext;
+        if (m == 1)
+            head = end;
+        else
+            pre_start->next = end;
+        
+        return head;
+    }
+    
+    /* Merge Intervals
+     Given a collection of intervals, merge all overlapping intervals.
+     
+     For example,
+     Given [1,3],[2,6],[8,10],[15,18],
+     return [1,6],[8,10],[15,18].
+     */
+    struct Interval {
+        int start;
+        int end;
+        Interval() : start(0), end(0) {}
+        Interval(int s, int e) : start(s), end(e) {}
+    };
+    
+    vector<Interval> merge(vector<Interval> &intervals) {
+        if (intervals.size() <= 1)
+            return intervals;
+        
+        // convert to start:lens
+        multimap<int, int> axis;
+        for (int i = 0; i < intervals.size(); i++) {
+            axis.insert(pair<int,int>(intervals[i].start, intervals[i].end - intervals[i].start));
+        }
+        
+        vector<Interval> output;
+        typedef multimap<int, int>::iterator mapit;
+        int start = 0;
+        int maxlen = -1;
+        for (mapit it = axis.begin(); it != axis.end(); it++) {
+            if (maxlen == -1) {   // first element
+                start = it->first;
+                maxlen = it->second;
+            } else {
+                int cur = it->first;
+                int curlen = it->second;
+                
+                // if the element is within the previous interval
+                if (cur <= start + maxlen) {
+                    // update maxlen
+                    maxlen = max(maxlen, curlen + cur - start);
+                } else {
+                    // push previous interval to output
+                    Interval prev(start, start+maxlen);
+                    output.push_back(prev);
+                    start = cur;
+                    maxlen = curlen;
+                }
+                
+            }
+        }
+        // push the last one
+        Interval prev(start, start+maxlen);
+        output.push_back(prev);
+        
+        return output;
+    }
+    
 };
 
 template <class T>
