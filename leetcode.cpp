@@ -2908,6 +2908,244 @@ public:
         return output;
     }
     
+    /* Trapping Rain Water, 27'
+     Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
+     
+     For example,
+     Given [0,1,0,2,1,0,1,3,2,1,2,1], return 6.
+     */
+    int CountWater(int A[], int start, int end, int max_height) {
+        int count = 0;
+        for (int i = start; i <= end; i++)
+            count += (A[i] < max_height) ? max_height - A[i] : 0;
+        return count;
+    }
+    
+    int trap(int A[], int n) {
+        if (n <= 1)
+            return 0;
+        
+        int left = 0;
+        int water = 0;
+        // seek first non-zero entry of A
+        while(!A[left] && left < n)
+            left++;
+        for (int i = left+1; i < n; i++) {
+            if (A[i] < A[left])
+                continue;
+            if (A[i] >= A[left]) {
+                water += CountWater(A, left, i, A[left]);
+                left = i;
+            }
+        }
+        // reverse the procudure if left < n-1
+        int right = n-1;
+        while (!A[right] && right > left)
+            right--;
+        for (int i = right - 1; i >= left; i--) {
+            if (A[i] < A[right])
+                continue;
+            if (A[i] >= A[right]) {
+                water += CountWater(A, i, right, A[right]);
+                right = i;
+            }
+        }
+        
+        return water;
+    }
+    
+    /* Populating Next Right Pointers in Each Node, 3'
+     Given a binary tree
+     
+     struct TreeLinkNode {
+     TreeLinkNode *left;
+     TreeLinkNode *right;
+     TreeLinkNode *next;
+     }
+     Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+     
+     Initially, all next pointers are set to NULL.
+     
+     Note:
+     
+     You may only use constant extra space.
+     You may assume that it is a perfect binary tree (ie, all leaves are at the same level, and every parent has two children).
+     For example,
+     Given the following perfect binary tree,
+     1
+     /  \
+     2    3
+     / \  / \
+     4  5  6  7
+     After calling your function, the tree should look like:
+     1 -> NULL
+     /  \
+     2 -> 3 -> NULL
+     / \  / \
+     4->5->6->7 -> NULL
+     */
+    struct TreeLinkNode {
+        int val;
+        TreeLinkNode *left, *right, *next;
+        TreeLinkNode(int x) : val(x), left(NULL), right(NULL), next(NULL) {}
+    };
+    
+    void connect(TreeLinkNode *root) {
+        if (!root)
+            return;
+        vector<TreeLinkNode*> mem;
+        mem.push_back(root);
+        
+        while (!mem.empty()) {
+            vector<TreeLinkNode*> next_level;
+            for (int i = 0; i < mem.size(); i++) {
+                TreeLinkNode*& cur = mem[i];
+                if (cur->left)
+                    next_level.push_back(cur->left);
+                if (cur->right)
+                    next_level.push_back(cur->right);
+                if (i < mem.size() -1)
+                    cur->next = mem[i+1];
+                else
+                    cur->next = NULL;
+            }
+            mem = next_level;
+        }
+        
+        return;
+    }
+    
+    /* Populating Next Right Pointers in Each Node II
+     Follow up for problem "Populating Next Right Pointers in Each Node".
+     
+     What if the given tree could be any binary tree? Would your previous solution still work?
+     
+     Note:
+     
+     You may only use constant extra space.
+     For example,
+     Given the following binary tree,
+     1
+     /  \
+     2    3
+     / \    \
+     4   5    7
+     After calling your function, the tree should look like:
+     1 -> NULL
+     /  \
+     2 -> 3 -> NULL
+     / \    \
+     4-> 5 -> 7 -> NULL
+     */
+    void connect2(TreeLinkNode *root) {
+        if (!root)
+            return;
+        vector<TreeLinkNode*> mem;
+        mem.push_back(root);
+        while (!mem.empty()) {
+            vector<TreeLinkNode*> next_level;
+            for (int i = 0; i < mem.size(); i++) {
+                TreeLinkNode*& cur = mem[i];
+                if (cur->left)
+                    next_level.push_back(cur->left);
+                if (cur->right)
+                    next_level.push_back(cur->right);
+                if (i < mem.size() -1)
+                    cur->next = mem[i+1];
+                else
+                    cur->next = NULL;
+            }
+            mem = next_level;
+        }
+        
+        return;
+    }
+    
+    /* Word Ladder
+     Given two words (start and end), and a dictionary, find the length of shortest transformation sequence from start to end, such that:
+     
+     Only one letter can be changed at a time
+     Each intermediate word must exist in the dictionary
+     For example,
+     
+     Given:
+     start = "hit"
+     end = "cog"
+     dict = ["hot","dot","dog","lot","log"]
+     As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
+     return its length 5.
+     
+     Note:
+     Return 0 if there is no such transformation sequence.
+     All words have the same length.
+     All words contain only lowercase alphabetic characters.
+     */
+    int ladderLength(string start, string end, unordered_set<string> &dict) {
+        unordered_set<string> visited;
+        int len = start.length();
+        int distance = 1;
+        vector<string> agenda;
+        agenda.push_back(start);
+        while (!agenda.empty()) {
+            distance++;
+            vector<string> next;
+            
+            for (int i = 0; i < agenda.size(); i++) {
+                string cur = agenda[i];
+                visited.insert(cur);
+                
+                for (int j = 0; j < len; j++) {
+                    // change one letter a time
+                    string tmp = cur;
+                    for (int k = 0; k < 26; k++) {
+                        tmp[j] = char('a' + k);
+                        // check if it is end
+                        if (!end.compare(tmp))
+                            return distance;
+                        
+                        // check if in dict
+                        if (dict.count(tmp) && !visited.count(tmp)) {
+                            next.push_back(tmp);
+                            visited.insert(tmp);
+                        }
+                    }
+                }
+            }
+            
+            agenda = next;
+        }
+        
+        return 0;
+    }
+    
+    /* First Missing Positive 
+     Given an unsorted integer array, find the first missing positive integer.
+     
+     For example,
+     Given [1,2,0] return 3,
+     and [3,4,-1,1] return 2.
+     
+     Your algorithm should run in O(n) time and uses constant space.
+     */
+    int firstMissingPositive(int A[], int n) {
+        if (n < 1)
+            return 1;
+        unordered_set<int> mem;
+        int maxa = -1;
+        for (int i = 0; i < n; i++) {
+            if (A[i] > 0) {
+                mem.insert(A[i]);
+                maxa = max(maxa, A[i]);
+            }
+        }
+        if (maxa == -1)
+            return 1;
+        
+        for (int i = 1; i <= maxa; i++)
+            if (!mem.count(i))
+                return i;
+        return maxa+1;
+    }
 };
 
 template <class T>
