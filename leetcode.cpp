@@ -3146,6 +3146,271 @@ public:
                 return i;
         return maxa+1;
     }
+    
+    /* Search a 2D Matrix
+     Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+     
+     Integers in each row are sorted from left to right.
+     The first integer of each row is greater than the last integer of the previous row.
+     For example,
+     
+     Consider the following matrix:
+     
+     [
+     [1,   3,  5,  7],
+     [10, 11, 16, 20],
+     [23, 30, 34, 50]
+     ]
+     Given target = 3, return true.
+     */
+    bool searchMatrix(vector<vector<int> > &matrix, int target) {
+        int rows = matrix.size();
+        int cols = matrix[0].size();
+        
+        // search which row it belongs to
+        int rstart = 0;
+        int rend = rows-1;
+        int r = -1;
+        
+        while (rend - rstart > 1) {
+            r = (rstart + rend) / 2;
+            if (matrix[r][0] == target)
+                return true;
+            else if (matrix[r][0] < target)
+                rstart = r + 1;
+            else
+                rend = r - 1;
+        }
+        // manual compare with rstart, rend
+        if (rend < rstart)
+            swap(rend, rstart);
+        if (target < matrix[rstart][0]) {
+            if (rstart == 0)
+                return false;
+            else
+                r = rstart - 1;
+        } else if (target < matrix[rend][0])
+            r = rstart;
+        else
+            r = rend;
+        
+        // search which col it belongs to
+        return binary_search(matrix[r].begin(), matrix[r].end(), target);
+    }
+    
+    /* Spiral Matrix
+     Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
+     
+     For example,
+     Given the following matrix:
+     
+     [
+     [ 1, 2, 3 ],
+     [ 4, 5, 6 ],
+     [ 7, 8, 9 ]
+     ]
+     You should return [1,2,3,6,9,8,7,4,5].
+     */
+    vector<int> spiralOrder(vector<vector<int> > &matrix) {
+        vector<int> output;
+        
+        if (!matrix.size())
+            return output;
+        
+        int rstart = 0;
+        int rend = matrix.size() - 1;
+        int cstart = 0;
+        int cend = matrix[0].size() - 1;
+        
+        while (true) {
+            // upper row left to right
+            for (int c = cstart; c <= cend; c++)
+                output.push_back(matrix[rstart][c]);
+            // update rstart
+            rstart++;
+            if (rstart > rend)
+                break;
+            
+            // right column up to down
+            for (int r = rstart; r <= rend; r++)
+                output.push_back(matrix[r][cend]);
+            // update cend
+            cend--;
+            if (cstart > cend)
+                break;
+            
+            // bottom row right to left
+            for (int c = cend; c >= cstart; c--)
+                output.push_back(matrix[rend][c]);
+            // update rend
+            rend--;
+            if (rstart > rend)
+                break;
+            
+            // left column down to up
+            for (int r = rend; r >= rstart; r--)
+                output.push_back(matrix[r][cstart]);
+            // update cstart
+            cstart++;
+            if (cstart > cend)
+                break;
+        }
+        
+        return output;
+    }
+    
+    /* Spiral Matrix II
+     Given an integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+     
+     For example,
+     Given n = 3,
+     
+     You should return the following matrix:
+     [
+     [ 1, 2, 3 ],
+     [ 8, 9, 4 ],
+     [ 7, 6, 5 ]
+     ]
+     */
+    vector<vector<int> > generateMatrix(int n) {
+        vector<vector<int> > matrix(n, vector<int>(n, -1));
+        
+        if (n < 1)
+            return matrix;
+        
+        int rstart = 0;
+        int rend = n - 1;
+        int cstart = 0;
+        int cend = n - 1;
+        int i = 1;
+        while (i <= n*n) {
+            // upper row left to right
+            for (int c = cstart; c <= cend; c++)
+                matrix[rstart][c] = i++;
+            // update rstart
+            rstart++;
+            if (rstart > rend)
+                break;
+            
+            // right column up to down
+            for (int r = rstart; r <= rend; r++)
+                matrix[r][cend] = i++;
+            // update cend
+            cend--;
+            if (cstart > cend)
+                break;
+            
+            // bottom row right to left
+            for (int c = cend; c >= cstart; c--)
+                matrix[rend][c] = i++;
+            // update rend
+            rend--;
+            if (rstart > rend)
+                break;
+            
+            // left column down to up
+            for (int r = rend; r >= rstart; r--)
+                matrix[r][cstart] = i++;
+            // update cstart
+            cstart++;
+            if (cstart > cend)
+                break;
+        }
+        
+        return matrix;
+    }
+    
+    /* Path Sum
+     Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+     
+     For example:
+     Given the below binary tree and sum = 22,
+     5
+     / \
+     4   8
+     /   / \
+     11  13  4
+     /  \      \
+     7    2      1
+     return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22.
+     */
+    bool hasPathSum(TreeNode *root, int sum) {
+        // base case:
+        if (!root)
+            return false;
+        if (!root->left && !root->right)
+            return (sum == root->val) ? true : false;
+        
+        // recursion:
+        bool left = false;
+        bool right = false;
+        if (root->left)
+            left = hasPathSum(root->left, sum - root->val);
+        if (root->right)
+            right = hasPathSum(root->right, sum - root->val);
+        
+        return (left || right);
+    }
+    
+    /* Path Sum II
+     Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+     
+     For example:
+     Given the below binary tree and sum = 22,
+     5
+     / \
+     4   8
+     /   / \
+     11  13  4
+     /  \    / \
+     7    2  5   1
+     return
+     [
+     [5,4,11,2],
+     [5,8,4,5]
+     ]
+     */
+    vector<vector<int> > pathSum(TreeNode *root, int sum) {
+        vector<vector<int> > paths;
+        if (!root)
+            return paths;
+        if (!root->left && !root->right) {
+            if (sum == root->val) {
+                vector<int> leaf;
+                leaf.push_back(root->val);
+                paths.push_back(leaf);
+            }
+            return paths;
+        }
+        // recursion
+        if (root->left) {
+            vector<vector<int> > left = pathSum(root->left, sum - root->val);
+            if (left.size()) {
+                for (int i = 0; i < left.size(); i++) {
+                    vector<int> tmp;
+                    tmp.push_back(root->val);
+                    for (int j = 0; j < left[i].size(); j++)
+                        tmp.push_back(left[i][j]);
+                    paths.push_back(tmp);
+                }
+            }
+        }
+        if (root->right) {
+            vector<vector<int> > right = pathSum(root->right, sum - root->val);
+            if (right.size()) {
+                for (int i = 0; i < right.size(); i++) {
+                    vector<int> tmp;
+                    tmp.push_back(root->val);
+                    for (int j = 0; j < right[i].size(); j++)
+                        tmp.push_back(right[i][j]);
+                    paths.push_back(tmp);
+                }
+            }
+        }
+        
+        return paths;
+    }
+    
 };
 
 template <class T>
