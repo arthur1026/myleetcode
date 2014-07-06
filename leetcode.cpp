@@ -3411,6 +3411,165 @@ public:
         return paths;
     }
     
+    /* Implement strStr()
+     Implement strStr().
+     
+     Returns a pointer to the first occurrence of needle in haystack, or null if needle is not part of haystack.
+     */
+    char *strStr(char *haystack, char *needle) {
+        int haystack_len = (unsigned)strlen(haystack);
+        int needle_len = (unsigned)strlen(needle);
+        if (!haystack_len && !needle_len)
+            return haystack;
+        if (!haystack_len)
+            return NULL;
+        if (!needle_len)
+            return haystack;
+        
+        for (int i = 0; i <= haystack_len - needle_len; i++) {
+            bool found = true;
+            for (int j = 0; j < needle_len; j++) {
+                if (needle[j] != haystack[i+j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found)
+                return haystack+i;
+        }
+        
+        return NULL;
+    }
+    
+    /* Set Matrix Zeroes
+     Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in place.
+     
+     click to show follow up.
+     
+     Follow up:
+     Did you use extra space?
+     A straight forward solution using O(mn) space is probably a bad idea.
+     A simple improvement uses O(m + n) space, but still not the best solution.
+     Could you devise a constant space solution?
+     */
+    void setZeroes(vector<vector<int> > &matrix) {
+        int rows = (unsigned)matrix.size();
+        if (!rows)
+            return;
+        int cols = (unsigned)matrix[0].size();
+        
+        // row and col indicators
+        vector<bool> zero_rows(rows, false);
+        vector<bool> zero_cols(cols, false);
+        
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++) {
+                if (!matrix[r][c]) {
+                    zero_rows[r] = true;
+                    zero_cols[c] = true;
+                }
+            }
+        
+        // set rows and columns
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++) {
+                if (zero_rows[r] || zero_cols[c])
+                    matrix[r][c] = 0;
+            }
+        
+        return;
+    }
+    
+    /* Minimum Path Sum
+     Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path.
+     
+     Note: You can only move either down or right at any point in time.
+     */
+    int minPathSum(vector<vector<int> > &grid) {
+        int rows = grid.size();
+        if (!rows)
+            return 0;
+        int cols = grid[0].size();
+        
+        vector<vector<int> > cost(rows, vector<int>(cols, 0));
+        cost[0][0] = grid[0][0];
+        // initialize first row
+        for (int c = 1; c < cols; c++)
+            cost[0][c] = cost[0][c-1] + grid[0][c];
+        // initialize first column
+        for (int r = 1; r < rows; r++)
+            cost[r][0] = cost[r-1][0] + grid[r][0];
+        // dynamic programming
+        for (int c = 1; c < cols; c++) {
+            for (int r = 1; r < rows; r++) {
+                cost[r][c] = grid[r][c] + min(cost[r-1][c], cost[r][c-1]);
+            }
+        }
+        
+        return cost[rows-1][cols-1];
+    }
+    
+    /* Add Binary 
+     Given two binary strings, return their sum (also a binary string).
+     
+     For example,
+     a = "11"
+     b = "1"
+     Return "100".
+     */
+    string addBinary(string a, string b) {
+        if (!a.length())
+            return b;
+        if (!b.length())
+            return a;
+        
+        int carry = 0;
+        string reverse_result;
+        // always let b be the one with shorter/equal length
+        if (a.length() < b.length())
+            swap(a, b);
+        int j = a.length() - 1;
+        for (int i = b.length() - 1; i >= 0; i--) {
+            int bb = int(b[i] - '0');
+            int aa = int(a[j] - '0');
+            int sum = aa + bb + carry;
+            if (sum == 0) {
+                reverse_result.push_back('0');
+                carry = 0;
+            } else if (sum == 1) {
+                reverse_result.push_back('1');
+                carry = 0;
+            } else if (sum == 2) {
+                reverse_result.push_back('0');
+                carry = 1;
+            } else if (sum == 3) {
+                reverse_result.push_back('1');
+                carry = 1;
+            }
+            j--;
+        }
+        
+        // push the rest of a into result
+        for (; j >= 0; j--) {
+            int aa = int(a[j] - '0');
+            int sum = aa + carry;
+            if (sum == 0) {
+                reverse_result.push_back('0');
+                carry = 0;
+            } else if (sum == 1) {
+                reverse_result.push_back('1');
+                carry = 0;
+            } else if (sum == 2) {
+                reverse_result.push_back('0');
+                carry = 1;
+            }
+        }
+        if (carry)
+            reverse_result.push_back('1');
+        
+        return string(reverse_result.rbegin(), reverse_result.rend());
+    }
+    
 };
 
 template <class T>
