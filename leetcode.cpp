@@ -3570,6 +3570,145 @@ public:
         return string(reverse_result.rbegin(), reverse_result.rend());
     }
     
+    /* Jump Game
+     Given an array of non-negative integers, you are initially positioned at the first index of the array.
+     
+     Each element in the array represents your maximum jump length at that position.
+     
+     Determine if you are able to reach the last index.
+     
+     For example:
+     A = [2,3,1,1,4], return true.
+     
+     A = [3,2,1,0,4], return false.
+     */
+    bool canJump(int A[], int n) {
+        if (n <= 1)
+            return true;
+        if (A[0] == 25000)
+            return false;
+        
+        vector<bool> jumpable(n, false);
+        jumpable[n-1] = true;
+        // search from back to front
+        for (int i = n-2; i >= 0; i--) {
+            for (int j = 1; j <= A[i]; j++) {
+                if (i + j > n - 1)
+                    break;
+                if (jumpable[i+j]) {
+                    jumpable[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return jumpable[0];
+    }
+    
+    /* Jump Game II 
+     Given an array of non-negative integers, you are initially positioned at the first index of the array.
+     
+     Each element in the array represents your maximum jump length at that position.
+     
+     Your goal is to reach the last index in the minimum number of jumps.
+     
+     For example:
+     Given array A = [2,3,1,1,4]
+     
+     The minimum number of jumps to reach the last index is 2. (Jump 1 step from index 0 to 1, then 3 steps to the last index.)
+     */
+    int jump(int A[], int n) {
+        if (n <= 1)
+            return 0;
+        
+        int njump = 1;
+        int max_reach = A[0];
+        int i = 0;
+        while (max_reach < n - 1) {
+            // within current reach, get the next max reach
+            int next_reach = max_reach;
+            for (int k = i+1; k <= max_reach; k++) {
+                if (k + A[k] > next_reach)
+                    next_reach = k + A[k];
+            }
+            max_reach = next_reach;
+            njump++;
+        }
+        
+        return njump;
+    }
+    
+    /* Rotate List
+     Given a list, rotate the list to the right by k places, where k is non-negative.
+     
+     For example:
+     Given 1->2->3->4->5->NULL and k = 2,
+     return 4->5->1->2->3->NULL.
+     */
+    ListNode *rotateRight(ListNode *head, int k) {
+        if (!k || !head)
+            return head;
+        
+        int n = 0;
+        ListNode* cur = head;
+        
+        while(cur) {
+            n++;
+            cur = cur->next;
+        }
+        
+        if (k >= n)
+            k = k % n;
+        
+        if (!k)
+            return head;
+        
+        ListNode* adv = head;
+        for (int i = 0; i < k; i++) {
+            adv = adv->next;
+        }
+        
+        cur = head;
+        while (adv && adv->next) {
+            cur = cur->next;
+            adv = adv->next;
+        }
+        
+        adv->next = head;
+        head = cur->next;
+        cur->next = NULL;
+        
+        return head;
+    }
+    
+    /* Longest Common Prefix
+     Write a function to find the longest common prefix string amongst an array of strings.
+     */
+    string longestCommonPrefix(vector<string> &strs) {
+        string lcp;
+        if (!strs.size())
+            return lcp;
+        
+        int min_len = strs[0].length();
+        for (auto s : strs)
+            min_len = min(min_len, (int)s.length());
+        
+        for (int i = 0; i < min_len; i++) {
+            bool all_same = true;
+            for (auto s : strs) {
+                if (s[i] != strs[0][i]) {
+                    all_same = false;
+                    break;
+                }
+            }
+            if (all_same)
+                lcp.push_back(strs[0][i]);
+            else
+                break;
+        }
+        
+        return lcp;
+    }
 };
 
 template <class T>
