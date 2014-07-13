@@ -617,6 +617,30 @@ public:
 			return result;
     }
     
+    /* Implement int sqrt(int x)
+       Note: turn it into divide and conquer since only want output as int
+     */
+    int sqrt(int x) {
+        int left = 1;
+        int right = x/2;
+        int mid;
+        int last_mid;
+        
+        if (x < 2)
+            return x;
+        while (left <= right) {
+            mid = (left + right) / 2;
+            if (x / mid > mid) {    // mid is too small
+                left = mid + 1;
+                last_mid = mid;
+            } else if (x / mid < mid) { // mid is too large
+                right = mid - 1;
+            } else
+                return mid;
+        }
+        return last_mid;
+    }
+    
 	/* Given an array where elements are sorted in ascending order, convert it to a height balanced BST.
 	 */
 	// vector<int> a(b.start, b.end) range is [b[start], b[end]), not including b[end]!
@@ -2496,6 +2520,22 @@ public:
         return result;
     }
     
+    /* Search Inser Position
+     */
+    int searchInsert(int A[], int n, int target) {
+        int start = 0;
+        int end = n;
+        while (start != end) {
+            int mid = (start + end) / 2;
+            if (A[mid] < target)
+                start = mid+1;
+            else
+                end = mid;
+        }
+        
+        return start;
+    }
+    
     /* Count and Say
      The count-and-say sequence is the sequence of integers beginning as follows:
      1, 11, 21, 1211, 111221, ...
@@ -3077,6 +3117,61 @@ public:
         }
         
         return 0;
+    }
+    
+    /* Word Ladder 2
+     */
+    void buildPath(unordered_map<string, vector<string> >& father, vector<string>& path, const string& start, const string& word, vector<vector<string> >& result) {
+        path.push_back(word);
+        if (word == start) {
+            result.push_back(path);
+            reverse(result.back().begin(), result.back().end());
+        } else {
+            for (auto f : father[word])
+                buildPath(father, path, start, f, result);
+        }
+        path.pop_back();
+    }
+    
+    vector<vector<string> > findLadder(string start, string end, const unordered_set<string>& dict) {
+        unordered_set<string> visited;
+        unordered_map<string, vector<string> > father;
+        unordered_set<string> current, next;
+        
+        bool found = false;
+        current.insert(start);
+        visited.insert(start);
+        
+        while (!current.empty() && !found) {
+            for (auto word : current)
+                visited.insert(word);
+            for (auto word : current) {
+                for (size_t i = 0; i < word.size(); ++i) {
+                    string new_word = word;
+                    for (int k = 0; k < 26; k++) {
+                        new_word[i] = char('a' + k);
+                        
+                        if (new_word == end)
+                            found = true;
+                        
+                        if ((dict.count(new_word) || new_word == end) && !visited.count(new_word)) {
+                            next.insert(new_word);
+                            // allow other fathers to have this same son
+                            father[new_word].push_back(word);
+                        }
+                    }
+                }
+            }
+            current.clear();
+            swap(current, next);
+        }
+        vector<vector<string> > result;
+        if (found) {
+            vector<string> path;
+            buildPath(father, path, start, end, result);
+        }
+        return result;
+        
     }
     
     /* First Missing Positive 
@@ -3916,6 +4011,8 @@ public:
         result.push_back(num[0]);
         return result;
     }
+    
+    
     
     
 };
