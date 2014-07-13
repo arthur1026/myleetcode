@@ -3709,6 +3709,80 @@ public:
         
         return lcp;
     }
+    
+    /* Unique Paths
+     A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
+     
+     The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+     
+     How many possible unique paths are there?
+     */
+    int uniquePaths(int m, int n) {
+        if (!m || !n)
+            return 0;
+        vector<vector<int> > cost(m, vector<int>(n, 0));
+        // initialize first row and column
+        for (int c = 0; c < n; c++)
+            cost[0][c] = 1;
+        for (int r = 0; r < m; r++)
+            cost[r][0] = 1;
+        // dp part
+        for (int c = 1; c < n; c++)
+            for (int r = 1; r < m; r++)
+                cost[r][c] = cost[r-1][c] + cost[r][c-1];
+        
+        return cost[m-1][n-1];
+    }
+    
+    /* Unique Paths II
+     Follow up for "Unique Paths":
+     
+     Now consider if some obstacles are added to the grids. How many unique paths would there be?
+     
+     An obstacle and empty space is marked as 1 and 0 respectively in the grid.
+     
+     For example,
+     There is one obstacle in the middle of a 3x3 grid as illustrated below.
+     
+     [
+     [0,0,0],
+     [0,1,0],
+     [0,0,0]
+     ]
+     The total number of unique paths is 2.
+     
+     Note: m and n will be at most 100.
+     */
+    int uniquePathsWithObstacles(vector<vector<int> > &obstacleGrid) {
+        int rows = obstacleGrid.size();
+        int cols = obstacleGrid[0].size();
+        
+        if (!rows || !cols)
+            return 0;
+        
+        vector<vector<int> > cost(rows, vector<int>(cols, 0));
+        // initialize first row
+        for (int c = 0; c < cols; c++) {
+            if (obstacleGrid[0][c])
+                break;
+            cost[0][c] = 1;
+        }
+        // initialize first col
+        for (int r = 0; r < rows; r++) {
+            if (obstacleGrid[r][0])
+                break;
+            cost[r][0] = 1;
+        }
+        // dp step
+        for (int r = 1; r < rows; r++)
+            for (int c = 1; c < cols; c++) {
+                if (obstacleGrid[r][c])
+                    continue;
+                cost[r][c] = cost[r-1][c] + cost[r][c-1];
+            }
+        
+        return cost[rows-1][cols-1];
+    }
 };
 
 template <class T>
