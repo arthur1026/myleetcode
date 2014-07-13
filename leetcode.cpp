@@ -1565,45 +1565,6 @@ public:
         return max(leftd, rightd)+1;
     }
     
-    double findMedianSortedArrays(int A[], int m, int B[], int n) {
-        // Note: The Solution object is instantiated only once and is reused by each test case.
-        // base case:
-        if (m <= 0) {
-            if (n%2 == 1)
-                return B[n/2];
-            else
-                return (B[n/2]+B[n/2-1])/2.0;
-        }
-        if (n <= 0) {
-            if (m%2 == 1)
-                return A[m/2];
-            else
-                return (A[m/2]+A[m/2-1])/2.0;
-        }
-        if (m+n == 2)
-            return (A[0]+B[0])/2.0;
-        
-        // recursion:
-        double ma, mb;
-        if (m%2 == 1)
-            ma = A[m/2];
-        else
-            ma = (A[m/2] + A[m/2-1]) / 2.0;
-        if (n%2 == 1)
-            mb = B[n/2];
-        else
-            mb = (B[n/2] + B[n/2-1]) / 2.0;
-        
-        if (ma == mb)
-            return ma;
-        else if (ma < mb) {
-            return findMedianSortedArrays(&A[m/2+1], m/2-1, B, n/2-1);
-        }
-        else { // ma > mb
-            return findMedianSortedArrays(A, m/2-1, &B[n/2+1], n/2-1);
-        }
-    }
-    
     /* Best Time to Buy and Sell Stock III
      Say you have an array for which the ith element is the price of a given stock on day i.
      
@@ -3783,6 +3744,180 @@ public:
         
         return cost[rows-1][cols-1];
     }
+    
+    /* Median of Two Sorted Arrays
+     There are two sorted arrays A and B of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).
+     Reference: http://blog.csdn.net/yutianzuijin/article/details/11499917
+     */
+    // k should start at 1
+    double FindKthSmallest(int A[], int m, int B[], int n, int k) {
+        if (m > n)
+            return FindKthSmallest(B, n, A, m, k);
+        if (m == 0)
+            return B[k-1];
+        if (k == 1)
+            return min(A[0], B[0]);
+        
+        int i = min(k/2, m);
+        int j = k - i;
+        
+        if (A[i - 1] < B[j - 1])
+            return FindKthSmallest(A+i, m-i, B, n, k-i);
+        else if (A[i-1] > B[j-1])
+            return FindKthSmallest(A, m, B+j, n-j, k-j);
+        else
+            return A[i-1];
+    }
+    
+    double findMedianSortedArrays(int A[], int m, int B[], int n) {
+        if ((m + n) % 2)
+            return FindKthSmallest(A, m, B, n, (m+n)/2 + 1);
+        else
+            return (FindKthSmallest(A, m, B, n, (m+n)/2) + FindKthSmallest(A, m, B, n, (m+n)/2+1))/2.0;
+    }
+    
+    /* Longest Substring Without Repeating Characters
+     Given a string, find the length of the longest substring without repeating characters. For example, the longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3. For "bbbbb" the longest substring is "b", with the length of 1.
+     NOTE: greedy algorithm. Don't want a n^2 algorithm for long long string
+     */
+    int lengthOfLongestSubstring(string s) {
+        int n = s.length();
+        if (n <= 1)
+            return n;
+        
+        unordered_map<char, int> char_position;
+        int maxlen = 1;
+        // insert first element
+        char_position[s[0]] = 0;
+        int cur_start = 0;
+        for (int i = 1; i < n; i++) {
+            // if has repeated
+            char c = s[i];
+            if (char_position.count(c)) {
+                if (char_position[s[i]] >= cur_start) {
+                    maxlen = max(maxlen, i - cur_start);
+                    cur_start = char_position[c] + 1;
+                }
+            }
+            // record where this character occurs
+            char_position[c] = i;
+        }
+        maxlen = max(maxlen, n - cur_start);
+        return maxlen;
+    }
+    
+    /* Subsets
+     Given a set of distinct integers, S, return all possible subsets.
+     
+     Note:
+     Elements in a subset must be in non-descending order.
+     The solution set must not contain duplicate subsets.
+     For example,
+     If S = [1,2,3], a solution is:
+     
+     [
+     [3],
+     [1],
+     [2],
+     [1,2,3],
+     [1,3],
+     [2,3],
+     [1,2],
+     []
+     ]
+     */
+    vector<vector<int> > subsets(vector<int> &S) {
+        sort(S.begin(), S.end());
+        int n = S.size();
+        vector<vector<int> > result;
+        int max_range = 1 << n;
+        // use bit
+        for (int i = 0; i < max_range; i++) {
+            // for each 1, push result
+            vector<int> single_result;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j))
+                    single_result.push_back(S[j]);
+            }
+            result.push_back(single_result);
+        }
+        return result;
+    }
+    
+    /*Permutations 
+     Given a collection of numbers, return all possible permutations.
+     
+     For example,
+     [1,2,3] have the following permutations:
+     [1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], and [3,2,1].
+     */
+    void dfs(const vector<int>& num, vector<int>& path, vector<vector<int> >& result) {
+        // base case
+        if (path.size() == num.size()) {
+            result.push_back(path);
+            return;
+        }
+        
+        for (auto i : num) {
+            if (find(path.begin(), path.end(), i) == path.end()) {
+                path.push_back(i);
+                dfs(num, path, result);
+                path.pop_back();
+            }
+        }
+        
+    }
+    vector<vector<int> > permute(vector<int> &num) {
+        sort(num.begin(), num.end());
+        vector<vector<int> > result;
+        vector<int> path;
+        
+        dfs(num, path, result);
+        return result;
+    }
+    
+    /* Permutation Sequence
+     The set [1,2,3,…,n] contains a total of n! unique permutations.
+     
+     By listing and labeling all of the permutations in order,
+     We get the following sequence (ie, for n = 3):
+     
+     "123"
+     "132"
+     "213"
+     "231"
+     "312"
+     "321"
+     Given n and k, return the kth permutation sequence.
+     
+     Note: Given n will be between 1 and 9 inclusive.
+     */
+    int factorial(int n) {
+        int result = 1;
+        for (int i = 1; i <= n; i++)
+            result *= i;
+        return result;
+    }
+    string getPermutation(int n, int k) {
+        string num(n, '0');
+        string result;
+        for (int i = 0; i < n; i++)
+            num[i] += i + 1;
+        
+        int base = factorial(n - 1);
+        k--;
+        
+        for (int i = n-1; i > 0; k %= base, base /= i, --i) {
+            auto pos = next(num.begin(), k / base);
+            result.push_back(*pos);
+            num.erase(pos);
+        }
+        
+        result.push_back(num[0]);
+        return result;
+    }
+    
+    
 };
 
 template <class T>
