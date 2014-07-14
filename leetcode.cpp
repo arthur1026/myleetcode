@@ -4012,8 +4012,44 @@ public:
         return result;
     }
     
+    /* Combinations
+     Given two integers n and k, return all possible combinations of k numbers out of 1 ... n.
+     
+     For example,
+     If n = 4 and k = 2, a solution is:
+     
+     [
+     [2,4],
+     [3,4],
+     [2,3],
+     [1,2],
+     [1,3],
+     [1,4],
+     ]
+     */
+    void dfs_combine(const int& n, const int& k, vector<int>& path, vector<vector<int> >& result) {
+        if (path.size() == k) {
+            result.push_back(path);
+            return;
+        }
+        // only insert elements that is larger than the last element of path
+        int i = 1;
+        if (path.size())
+            i = path[path.size()-1] + 1;
+        for (; i <= n; i++) {
+            path.push_back(i);
+            dfs_combine(n, k, path, result);
+            path.pop_back();
+        }
+        
+    }
     
-    
+    vector<vector<int> > combine(int n, int k) {
+        vector<vector<int> > result;
+        vector<int> path;
+        dfs_combine(n, k, path, result);
+        return result;
+    }
     
 };
 
