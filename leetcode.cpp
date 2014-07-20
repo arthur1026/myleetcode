@@ -45,6 +45,66 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+	/*Restore IP Addresses 
+	Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+
+For example:
+Given "25525511135",
+
+return ["255.255.11.135", "255.255.111.35"]. (Order does not matter)
+	*/
+	vector<string> restoreIpAddresses(string s) {
+        set<string> result;
+        string path;
+        dfs_restoreIpAddresses(s, path, 0, 0, result);
+        return vector<string>(result.begin(), result.end());
+    }
+    
+    bool validIp(string s) {
+       
+        int num = 0;
+        for (size_t i = 0; i < s.length(); i++) {
+            num = num*10 + (s[i] - '0');
+        }
+        if (num <= 255) {
+            if (s.length() > 1 && s[0] == '0')
+                return false;
+            return true;
+        }
+        return false;
+    }
+    
+    void dfs_restoreIpAddresses(string s, string path, int start, int step, set<string>& result) {
+        if (step == 4) {
+            if (start == s.length())
+                result.insert(path);
+            return;
+        }
+        
+        // TODO: could add a condition here to end early
+
+
+        for (int len = 1; len <= 3; len++) {
+            if (start + len <= s.length()) {
+                string ss = s.substr(start, len);
+                if (validIp(ss)) {
+                    if (path.size())
+                        path.push_back('.');
+                        
+                    for (int i = 0; i < len; i++)
+                        path.push_back(ss[i]);
+                        
+                    dfs_restoreIpAddresses(s, path, start+len, step+1, result);
+                    
+                    for (int i = 0; i < len; i++)
+                        path.pop_back();
+                        
+                    if (path.size())
+                        path.pop_back();
+                }
+            }
+        }
+    }
     /* Letter Combinations of a Phone Number 
     Given a digit string, return all possible letter combinations that the number could represent.
 
