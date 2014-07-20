@@ -45,7 +45,102 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
-	// Word Break
+    /* Combination Sum 
+    Given a set of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+
+The same repeated number may be chosen from C unlimited number of times.
+
+Note:
+All numbers (including target) will be positive integers.
+Elements in a combination (a1, a2, … , ak) must be in non-descending order. (ie, a1 ≤ a2 ≤ … ≤ ak).
+The solution set must not contain duplicate combinations.
+For example, given candidate set 2,3,6,7 and target 7, 
+A solution set is: 
+[7] 
+[2, 2, 3] 
+    */
+    vector<vector<int> > combinationSum(vector<int> &candidates, int target) {
+        set<vector<int> > results;
+        vector<int> path;
+        sort(candidates.begin(), candidates.end());
+        dfs_combinationSum(candidates, target, path, 0, results);
+        vector<vector<int> > real_results(results.begin(), results.end());
+        return real_results;
+    }
+    
+    void dfs_combinationSum(const vector<int>& candidates, int target, vector<int> path, int sum, set<vector<int> >& results) {
+        if (sum > target)
+            return;
+        if (sum == target) {
+            results.insert(path);
+            return;
+        }
+        for (auto c : candidates) {
+            if (sum+c > target)
+                break;
+            if (path.size() && c < path[path.size()-1])
+                continue;
+            path.push_back(c);
+            dfs_combinationSum(candidates, target, path, sum+c, results);
+            path.pop_back();
+        }
+    }
+    
+    /*Combination Sum II 
+    Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+
+Each number in C may only be used once in the combination.
+
+Note:
+All numbers (including target) will be positive integers.
+Elements in a combination (a1, a2, … , ak) must be in non-descending order. (ie, a1 ≤ a2 ≤ … ≤ ak).
+The solution set must not contain duplicate combinations.
+For example, given candidate set 10,1,2,7,6,1,5 and target 8, 
+A solution set is: 
+[1, 7] 
+[1, 2, 5] 
+[2, 6] 
+[1, 1, 6] 
+    */
+    vector<vector<int> > combinationSum2(vector<int> &num, int target) {
+        sort(num.begin(), num.end());
+        vector<int> path;
+        set<vector<int> > results;
+        
+        dfs_combinationSum2(num, target, num.size(), 0, 0, path, results);
+        
+        return vector<vector<int> >(results.begin(), results.end());
+    }
+    
+    void dfs_combinationSum2(const vector<int>& num, const int& target, const int& n, int sum, int i, vector<int> path, set<vector<int> >& results) {
+        if (sum == target) {
+            results.insert(path);
+            return;
+        }
+        // i is [0, n-1]
+        if (n == i)
+            return;
+            
+        // not choose num[i]
+        if (sum > target)
+            return;
+
+        dfs_combinationSum2(num, target, n, sum, i+1, path, results);
+        
+        // choose num[i]
+        if (sum + num[i] <= target) {
+            // avoid using the same num again            
+            if (i > 0 && num[i] == num[i-1])
+                if (find(path.begin(), path.end(), num[i]) == path.end())
+                    return;
+
+            path.push_back(num[i]);
+            dfs_combinationSum2(num, target, n, sum+num[i], i+1, path, results);
+            path.pop_back();
+        }
+    }
+    
+    // Word Break
 	/* 
 	   Given a string s and a dictionary of words dict,
 	   determine if s can be segmented into a space-separated
