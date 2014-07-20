@@ -45,6 +45,65 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+    /* Letter Combinations of a Phone Number 
+    Given a digit string, return all possible letter combinations that the number could represent.
+
+A mapping of digit to letters (just like on the telephone buttons) is given below.
+
+
+
+Input:Digit string "23"
+Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+Note:
+Although the above answer is in lexicographical order, your answer could be in any order you want.
+    */
+    vector<string> letterCombinations(string digits) {
+        vector<string> keys;
+        // 0
+        keys.push_back(" ");
+        // 1
+        keys.push_back("");
+        // 2
+        keys.push_back("abc");
+        // 3
+        keys.push_back("def");
+        // 4
+        keys.push_back("ghi");
+        // 5
+        keys.push_back("jkl");
+        // 6
+        keys.push_back("mno");
+        // 7
+        keys.push_back("pqrs");
+        // 8
+        keys.push_back("tuv");
+        // 9
+        keys.push_back("wxyz");
+        
+        string path;
+        vector<string> results;
+        dfs_letterCombinations(keys, digits, path, 0, digits.size(), results);
+        return results;
+    }
+    
+    void dfs_letterCombinations(const vector<string>& keys, string digits, string path, int i, int n, vector<string>& results) {
+        if (i == n) {
+            results.push_back(path);
+            return;
+        }
+        
+        int d = int(digits[i] - '0');
+        if (d == 1)
+            dfs_letterCombinations(keys, digits, path, i+1, n, results);
+        else {
+            for (auto k : keys[d]) {
+                path.push_back(k);
+                dfs_letterCombinations(keys, digits, path, i+1, n, results);
+                path.pop_back();
+            }
+        }
+    }
+    
     /* Combination Sum 
     Given a set of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
 
