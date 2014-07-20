@@ -45,6 +45,74 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+    /* Word Search 
+    Given a 2D board and a word, find if the word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+For example,
+Given board =
+
+[
+  ["ABCE"],
+  ["SFCS"],
+  ["ADEE"]
+]
+word = "ABCCED", -> returns true,
+word = "SEE", -> returns true,
+word = "ABCB", -> returns false.
+    */
+    bool exist(vector<vector<char> > &board, string word) {
+        int rows = board.size();
+        int cols = board[0].size();
+        
+        if (word.length() > rows * cols)
+            return false;
+        vector<vector<bool> > map(rows, vector<bool>(cols, false));
+        
+        // search for the beginning of the word
+        char cc = word[0];
+        for (int r = 0; r < board.size(); r++) {
+            for (int c = 0; c < board[0].size(); c++) {
+                if (board[r][c] == cc) {
+                    map[r][c] = true;
+                    if (dfs_exist(board, word, map, r, c, 1))
+                        return true;
+                    map[r][c] = false;
+                }
+            }
+        }
+        return false;
+    }
+    
+    bool dfs_exist(const vector<vector<char> >& board, string word, vector<vector<bool> >& map, int r, int c, int i) {
+        if (i == word.length())
+            return true;
+        int rows = board.size();
+        int cols = board[0].size();
+        
+        // search for neighbors
+        for (int delta_r = -1; delta_r <= 1; delta_r++) {
+            for (int delta_c = -1; delta_c <= 1; delta_c++) {
+                if ((abs(delta_r) + abs(delta_c)) != 1)
+                    continue;
+                int newr = r + delta_r;
+                int newc = c + delta_c;
+                if (newr < 0 || newr >= rows || newc < 0 || newc >= cols)
+                    continue;
+                if (map[newr][newc])
+                    continue;
+                if (board[newr][newc] == word[i]) {
+                    map[newr][newc] = true;
+                    if (dfs_exist(board, word, map, newr, newc, i+1))
+                        return true;
+                    map[newr][newc] = false;
+                }
+            }
+        }
+        
+        return false;
+    }
 	/*Restore IP Addresses 
 	Given a string containing only digits, restore it by returning all possible valid IP address combinations.
 
@@ -53,7 +121,7 @@ Given "25525511135",
 
 return ["255.255.11.135", "255.255.111.35"]. (Order does not matter)
 	*/
-	vector<string> restoreIpAddresses(string s) {
+    vector<string> restoreIpAddresses(string s) {
         set<string> result;
         string path;
         dfs_restoreIpAddresses(s, path, 0, 0, result);
