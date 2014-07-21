@@ -45,6 +45,85 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+    /* Sudoku Solver
+    
+    */
+    void solveSudoku(vector<vector<char> > &board) {
+        int steps = 0;
+        for (int r = 0; r < board.size(); r++) {
+            for (int c = 0; c < board[0].size(); c++) {
+                if (board[r][c] == '.')
+                    steps++;
+            }
+        }
+        
+        dfs_solveSudoku(steps, board, 0);
+    }
+    
+    bool dfs_solveSudoku(const int n, vector<vector<char> >& board, int step) {
+        if (n == step)
+            return true;
+            
+        // search for next available slot
+        int r;
+        int c;
+        bool found = false;
+        for (r = 0; r < board.size(); r++) {
+            for (c = 0; c < board[0].size(); c++) {
+                if (board[r][c] == '.') {
+                    found = true;
+                    break;
+                }
+            }
+            if (found)
+                break;
+        }
+        if (!found)
+            return false;
+            
+        // now search for valid values for board[r][c]
+        vector<bool> possible(9, false);
+        // check current row
+        for (int cc = 0; cc < 9; cc++) {
+            if (board[r][cc] != '.') {
+                int num = board[r][cc] - '1';
+                possible[num] = true;
+            }
+        }
+        // check current col
+        for (int rr = 0; rr < 9; rr++) {
+            if (board[rr][c] != '.') {
+                int num = board[rr][c] - '1';
+                possible[num] = true;
+            }
+        }
+        // check current grid
+        int c0 = c / 3;
+        int r0 = r / 3;
+        c0 *= 3;
+        r0 *= 3;
+        for (int rr = r0; rr < r0 + 3; rr++) {
+            for (int cc = c0; cc < c0 + 3; cc++) {
+                if (board[rr][cc] != '.') {
+                    int num = board[rr][cc] - '1';
+                    possible[num] = true;
+                }
+            }
+        }
+        
+        // now iterate through each possible value
+        for (int i = 0; i < possible.size(); i++) {
+            if (!possible[i]) {
+                // try different values
+                board[r][c] = char('1'+i);
+                if(dfs_solveSudoku(n, board, step+1))
+                    return true;
+                board[r][c] = '.';
+            }
+        }
+        
+        return false;
+    }    
     /* Valid Sudoku 
     
     */
