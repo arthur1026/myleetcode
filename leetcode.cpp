@@ -45,6 +45,53 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+    /* Valid Sudoku 
+    
+    */
+    bool checkSudoku(char c, vector<bool>& table) {
+        if (c == '.')
+            return true;
+        int num = c - '1';
+        if (table[num])
+            return false;
+        table[num] = true;
+        return true;
+    }
+    bool isValidSudoku(vector<vector<char> > &board) {
+        // evaluate each row
+        for (int r = 0; r < 9; r++) {
+            vector<bool> table(9, false);
+            for (int c = 0; c < 9; c++) {
+                if (!checkSudoku(board[r][c], table))
+                    return false;
+            }
+        }
+        
+        // evaluate each column
+        // evaluate each row
+        for (int c = 0; c < 9; c++) {
+            vector<bool> table(9, false);
+            for (int r = 0; r < 9; r++) {
+                if (!checkSudoku(board[r][c], table))
+                    return false;
+            }
+        }
+        
+        // evaluate each sub-square
+        for (int r0 = 0; r0 < 9; r0 += 3)
+        for (int c0 = 0; c0 < 9; c0 += 3) {
+            vector<bool> table(9, false);
+
+            for (int r = r0; r < r0 + 3; r++)
+            for (int c = c0; c < c0 + 3; c++) {
+                if (!checkSudoku(board[r][c], table))
+                    return false;
+            }
+        }
+        
+        return true;
+    }
+    
     /* Word Search 
     Given a 2D board and a word, find if the word exists in the grid.
 
