@@ -45,6 +45,31 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+/* Integer to Roman 
+Given an integer, convert it to a roman numeral.
+
+Input is guaranteed to be within the range from 1 to 3999.
+
+*/
+    string intToRoman(int num) {
+        vector<string> roman = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        vector<int> roman_int = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        string output = "";
+        int i = 0;
+        
+        while (num > 0) {
+            int times = num / roman_int[i];
+            num -= times * roman_int[i];
+            
+            for (int t = 0; t < times; t++)
+                output.append(roman[i]);
+            
+            i++;
+        }
+        
+        return output;
+    }
+
     /* Sudoku Solver
     
     */
