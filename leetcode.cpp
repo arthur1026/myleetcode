@@ -52,6 +52,73 @@ public:
 
 class Solution {
 public:
+/*Insert Interval 
+Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary).
+
+You may assume that the intervals were initially sorted according to their start times.
+
+Example 1:
+Given intervals [1,3],[6,9], insert and merge [2,5] in as [1,5],[6,9].
+
+Example 2:
+Given [1,2],[3,5],[6,7],[8,10],[12,16], insert and merge [4,9] in as [1,2],[3,10],[12,16].
+
+This is because the new interval [4,9] overlaps with [3,5],[6,7],[8,10].
+*/
+    vector<Interval> insert(vector<Interval> &intervals, Interval newInterval) {
+        vector<Interval> results;
+        if (intervals.size() == 0) {
+            results.push_back(newInterval);
+            return results;
+        }
+        
+        results.reserve(intervals.size());
+        int state = 0;  // 0: not started merging; 1: during merging; 2: done mergine
+        Interval merge;
+        for (int i = 0; i < intervals.size(); i++) {
+            Interval interval = intervals[i];
+            if (state == 0) {
+                if (newInterval.start > interval.end) {
+                    results.push_back(interval);
+                } else {
+                    // start merging
+                    merge.start = min(newInterval.start, interval.start);
+                    state = 1;
+                }
+            }
+            // during merging, check endpoints relation
+            if (state == 1) {
+                if (newInterval.end < interval.start) {
+                    merge.end = newInterval.end;
+                    state = 2;
+                    results.push_back(merge);
+                }
+                else if (newInterval.end <= interval.end) {
+                    // should end merging
+                    merge.end = max(newInterval.end, interval.end);
+                    state = 2;
+                    results.push_back(merge);
+                    continue;
+                }
+            }
+            // done merging, just push the rest of it into results
+            if (state == 2)
+                results.push_back(interval);
+        }
+        
+        if (state == 0) {
+            if (newInterval.start == results[results.size()-1].end)
+                results[results.size()-1].end = newInterval.end;
+            else
+                results.push_back(newInterval);
+        }
+        if (state == 1) {
+            merge.end = newInterval.end;
+            results.push_back(merge);
+        }
+        return results;
+    }
+    
 /*N-Queens*/
     vector<vector<string> > results;
     vector<vector<string> > solveNQueens(int n) {
