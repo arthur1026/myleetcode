@@ -43,8 +43,49 @@ struct UndirectedGraphNode {
     UndirectedGraphNode(int x) : label(x) {};
 };
 
+class ListNodeComparison {
+public:    
+    bool operator() (const ListNode* l1, const ListNode* l2) {
+        return (l1->val > l2->val);
+    }
+};
+
 class Solution {
 public:
+/* Merge k Sorted Lists 
+Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+*/
+    ListNode *mergeKLists(vector<ListNode *> &lists) {
+        priority_queue<ListNode*, vector<ListNode*>, ListNodeComparison> pq;
+        
+        // push the first k nodes into pg and cache
+        for (int i = 0; i < lists.size(); ++i) {
+            if (!lists[i])
+                continue;
+            pq.push(lists[i]);
+        }
+        
+        ListNode* head = NULL;
+        ListNode* tail = NULL;
+
+        while (!pq.empty()) {
+            ListNode* ln = pq.top();
+            pq.pop();
+            if (head == NULL) {
+                head = ln;
+                tail = ln;
+            } else {
+                tail->next = ln;
+            }
+            tail = ln;
+            // see if we need to push the next one
+            if (ln->next)
+                pq.push(ln->next);
+        }
+
+        return head;
+    }
+
 /*Swap Nodes in Pairs
 Given a linked list, swap every two adjacent nodes and return its head.
 
