@@ -52,6 +52,36 @@ public:
 
 class Solution {
 public:
+/*N-Queens*/
+    vector<vector<string> > results;
+    vector<vector<string> > solveNQueens(int n) {
+        vector<int> used_cols(n, -1);
+        solveNQueens(n, 0, used_cols);
+        return results;
+    }
+
+    void solveNQueens(int n, int row, vector<int>& used_cols) {
+        if (row == n) {
+            vector<string> single_result(n, "");
+            for (int r = 0; r < n; r++)
+                for (int c = 0; c < n; c++) {
+                    if (used_cols[r] == c)
+                        single_result[r].push_back('Q');
+                    else
+                        single_result[r].push_back('.');
+                }
+            results.push_back(single_result);
+            return;
+        }
+            
+        for (int i = 0; i < n; i++) {
+            if (ValidPosition(row, i, used_cols)) {
+                used_cols[row] = i;
+                solveNQueens(n, row+1, used_cols);
+            }
+        }
+    }
+    
 /*N-Queens II 
 Follow up for N-Queens problem.
 
