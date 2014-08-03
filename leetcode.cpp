@@ -45,6 +45,42 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+/*Swap Nodes in Pairs
+Given a linked list, swap every two adjacent nodes and return its head.
+
+For example,
+Given 1->2->3->4, you should return the list as 2->1->4->3.
+
+Your algorithm should use only constant space. You may not modify the values in the list, only nodes itself can be changed.
+*/
+    ListNode *swapPairs(ListNode *head) {
+        if (!head || !head->next)
+            return head;
+            
+        ListNode* prevprev = head;
+        ListNode* prev = head;
+        ListNode* cur = head->next;
+        
+        while (true) {
+            prev->next = cur->next;
+            cur->next = prev;
+            if (prevprev == head)
+                head = cur;
+            else
+                prevprev->next = cur;
+            
+            // check if there are at least two more nodes
+            if (!prev->next || !prev->next->next)
+                break;
+            // adjust pointers
+            prevprev = prev;
+            prev = prev->next;
+            cur = prev->next;
+        }
+        
+        return head;
+    }
+    
 /*Roman to Integer 
 Given a roman numeral, convert it to an integer.
 
