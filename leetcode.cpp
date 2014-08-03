@@ -52,6 +52,43 @@ public:
 
 class Solution {
 public:
+/*Anagrams
+Given an array of strings, return all groups of strings that are anagrams.
+
+Note: All inputs will be in lower-case.
+*/
+    vector<string> anagrams(vector<string> &strs) {
+        vector<string> results;
+        if (strs.empty())
+            return results;
+
+        unordered_multimap<string, int> table;
+        for (int i = 0; i < strs.size(); i++) {
+            string s = strs[i];
+            sort(s.begin(), s.end());
+            table.insert(pair<string, int>(s, i));
+        }
+        
+        // search in table
+        unordered_multimap<string, int>::iterator it;
+        while (!table.empty()) {
+            it = table.begin();
+            string s = it->first;
+            if (table.count(s) == 1) {
+                table.erase(it);
+                continue;
+            }
+            // then the element must be anagram
+            while (table.count(s)) {
+                it = table.find(s);
+                results.push_back(strs[it->second]);
+                table.erase(it);
+            }
+        }
+        
+        return results;
+    }
+    
 /*Insert Interval 
 Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary).
 
