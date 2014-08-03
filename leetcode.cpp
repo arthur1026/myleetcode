@@ -45,6 +45,35 @@ struct UndirectedGraphNode {
 
 class Solution {
 public:
+/*Roman to Integer 
+Given a roman numeral, convert it to an integer.
+
+Input is guaranteed to be within the range from 1 to 3999.
+*/
+    int romanToInt(string s) {
+        vector<string> roman = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        vector<int> roman_int = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        int i = 0;
+        int si = 0;
+        int result = 0;
+        
+        while (i < roman.size() && si < s.length()) {
+            if (si + roman[i].size() > s.length()) {
+                i++;
+                continue;
+            }
+            string ss = s.substr(si, roman[i].size());
+            if (ss.compare(roman[i]) == 0) {
+                result += roman_int[i];
+                si += roman[i].length();
+            } else {
+                i++;
+            }
+        }
+        
+        return result;
+    }
+
 /* Integer to Roman 
 Given an integer, convert it to a roman numeral.
 
