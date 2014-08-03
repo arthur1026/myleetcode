@@ -52,6 +52,48 @@ public:
 
 class Solution {
 public:
+/*N-Queens II 
+Follow up for N-Queens problem.
+
+Now, instead outputting board configurations, return the total number of distinct solutions.
+*/
+    int totalNQueens(int n) {
+        vector<int> used_cols(n, -1);
+        return solveTotalNQueens(n, 0, used_cols);
+    }
+    
+    int solveTotalNQueens(int n, int row, vector<int>& used_cols) {
+        if (row == n)
+            return 1;
+        int num = 0;
+        for (int i = 0; i < n; i++) {
+            if (ValidPosition(row, i, used_cols)) {
+                used_cols[row] = i;
+                num += solveTotalNQueens(n, row+1, used_cols);
+            }
+        }
+        
+        return num;
+    }
+    
+    bool ValidPosition(int row, int col, const vector<int>& used_cols) {
+
+        for (int i = 0; i < row; i++) {
+            // check if previous rows have used col
+            if (used_cols[i] == col)
+                return false;
+        
+            // check whether the queens are on the diagonal
+            if (row + col == i + used_cols[i])
+                return false;
+            
+            if (row - col == i - used_cols[i])
+                return false;
+        }
+        
+        return true;
+    }
+
 /* 4Sum 
 Given an array S of n integers, are there elements a, b, c, and d in S such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
 
