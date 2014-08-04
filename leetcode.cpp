@@ -52,6 +52,52 @@ public:
 
 class Solution {
 public:
+/*Distinct Subsequences 
+Given a string S and a string T, count the number of distinct subsequences of T in S.
+
+A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not).
+
+Here is an example:
+S = "rabbbit", T = "rabbit"
+
+Return 3.
+*/
+    int numDistinct(string S, string T) {
+        if (S.empty() || T.empty())
+            return 0;
+        if (S.size() < T.size())
+            return 0;
+            
+        unordered_map<string, int> mem;
+        return SolveNumDistinct(S, T, 0, 0, mem);
+    }
+    
+    int SolveNumDistinct(string s, string t, int si, int ti, unordered_map<string, int>& mem) {
+        stringstream ss;
+        ss << si << "," << ti;
+        string mem_index = ss.str();
+        
+        if (mem.count(mem_index) > 0)
+            return mem[mem_index];
+        
+        if (ti > t.size())
+            return 0;
+
+        if (ti == t.size()) {
+            mem[mem_index] = 1;
+            return 1;
+        }
+            
+        int num = 0;
+        for (int i = si; i < s.size(); i++) {
+            if (s[i] == t[ti])
+                num += SolveNumDistinct(s, t, i+1, ti+1, mem);
+        }
+        
+        mem[mem_index] = num;
+        return num;
+    }
+    
 /*Edit Distance 
 Given two words word1 and word2, find the minimum number of steps required to convert word1 to word2. (each operation is counted as 1 step.)
 
