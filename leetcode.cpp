@@ -52,6 +52,64 @@ public:
 
 class Solution {
 public:
+/*Minimum Window Substring 
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+For example,
+S = "ADOBECODEBANC"
+T = "ABC"
+Minimum window is "BANC".
+
+Note:
+If there is no such window in S that covers all characters in T, return the emtpy string "".
+
+If there are multiple such windows, you are guaranteed that there will always be only one unique minimum window in S.
+*/
+    string minWindow(string S, string T) {
+        if (!T.size() || !S.size() || S.size() < T.size())
+            return "";
+
+        const int ASCII_MAX = 256;
+        vector<int> expected_count(ASCII_MAX, 0);
+        vector<int> appear_count(ASCII_MAX, 0);
+        
+        for (auto t : T)
+            expected_count[t]++;
+        
+        int found = 0;
+        int min_len = -1;
+        int min_start = -1;
+        int start = 0;
+        
+        // one pass, assume no duplicates in T
+        for (int end = 0; end < S.size(); end++) {
+            if (expected_count[S[end]] > 0) {  // should be part of T
+                if (appear_count[S[end]] < expected_count[S[end]])
+                    found++;
+                appear_count[S[end]]++;
+            }
+            if (found == T.size()) {
+                // shrink start if necessary
+                while (appear_count[S[start]] > expected_count[S[start]] || expected_count[S[start]] == 0) {
+                    appear_count[S[start]]--;
+                    start++;
+                }
+                
+                // adjust length
+                int len = end - start + 1;
+                if (min_len == -1 || min_len > len) {
+                    min_len = len;
+                    min_start = start;
+                }
+            }
+        }
+        
+        if (min_len == -1)
+            return "";
+        
+        return S.substr(min_start, min_len);
+    }
+
 /*Distinct Subsequences 
 Given a string S and a string T, count the number of distinct subsequences of T in S.
 
