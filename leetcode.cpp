@@ -52,6 +52,106 @@ public:
 
 class Solution {
 public:
+/*Decode Ways 
+A message containing letters from A-Z is being encoded to numbers using the following mapping:
+
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+Given an encoded message containing digits, determine the total number of ways to decode it.
+
+For example,
+Given encoded message "12", it could be decoded as "AB" (1 2) or "L" (12).
+
+The number of ways decoding "12" is 2.
+*/
+    vector<int> mem;
+    int numDecodings(string s) {
+        if (s.empty())
+            return 0;
+            
+        mem = vector<int>(s.size()+1, -1);
+        return SolveNumDecodings(s, 0);
+    }
+    
+    int SolveNumDecodings(string s, int step) {
+        if (mem[step] > -1)
+            return mem[step];
+            
+        if (step == s.length()) {
+            mem[step] = 1;            
+            return 1;
+        }
+        
+        int num = 0;
+        if (s[step] != '0')
+            num += SolveNumDecodings(s, step+1);
+        if (step + 1 < s.length()) {
+            if (s[step] == '1' || (s[step] == '2' && s[step+1] <= '6'))
+                num += SolveNumDecodings(s, step+2);
+        }
+        
+        mem[step] = num;
+        
+        return num;
+    }
+
+/*Partition List 
+Given a linked list and a value x, partition it such that all nodes less than x come before nodes greater than or equal to x.
+
+You should preserve the original relative order of the nodes in each of the two partitions.
+
+For example,
+Given 1->4->3->2->5->2 and x = 3,
+return 1->2->2->4->3->5.
+*/
+    ListNode *partition(ListNode *head, int x) {
+        if (!head)
+            return head;
+            
+        ListNode* cur = head;
+        ListNode* next = NULL;
+        ListNode* large_head = NULL;
+        ListNode* large_tail = NULL;
+        ListNode* small_head = NULL;
+        ListNode* small_tail = NULL;
+        while (cur) {
+            next = cur->next;
+            if (cur->val < x) {
+                if (!small_head) {
+                    small_head = cur;
+                    small_tail = cur;
+                    if (large_head)
+                        small_tail->next = large_head;
+                } else {
+                    if (cur != small_tail->next) {
+                        cur->next = small_tail->next;
+                        small_tail->next = cur;
+                    }
+                    small_tail = cur;
+                }
+            } else {
+                if (!large_head) {
+                    large_head = cur;
+                    large_tail = cur;
+                    if (small_tail)
+                        small_tail->next = cur;
+                } else {
+                    if (cur != large_tail->next)
+                        large_tail->next = cur;
+                    large_tail = cur;
+                }
+            }
+            cur = next;
+        }
+        if (large_tail)
+            large_tail->next = NULL;
+        else
+            small_tail->next = NULL;
+        return (small_head) ? small_head : large_head;
+    }
+    
 /*Anagrams
 Given an array of strings, return all groups of strings that are anagrams.
 
