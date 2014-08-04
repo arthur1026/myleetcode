@@ -52,6 +52,42 @@ public:
 
 class Solution {
 public:
+/*Edit Distance 
+Given two words word1 and word2, find the minimum number of steps required to convert word1 to word2. (each operation is counted as 1 step.)
+
+You have the following 3 operations permitted on a word:
+
+a) Insert a character
+b) Delete a character
+c) Replace a character
+*/
+    int minDistance(string word1, string word2) {
+        int n = word1.size();
+        int m = word2.size();
+        if (!n || !m)
+            return max(n, m);
+        vector<vector<int> > dists(n+1, vector<int>(m+1, 0));
+        // initialize first row
+        for (int i = 0; i <= m; i++)
+            dists[0][i] = i;
+        // initialize first column
+        for (int i = 0; i <= n; i++)
+            dists[i][0] = i;
+        // dp step
+        for (int r = 1; r <= n; r++)
+            for (int c = 1; c <= m; c++) {
+                // insert or delete a charactor
+                dists[r][c] = min(dists[r-1][c], dists[r][c-1]) + 1;
+                if (word1[r-1] == word2[c-1]) {
+                    dists[r][c] = min(dists[r][c], dists[r-1][c-1]);
+                } else {
+                    // replace a charactor
+                    dists[r][c] = min(dists[r][c], dists[r-1][c-1]+1);
+                }
+            }
+        return dists[n][m];
+    }
+
 /*Decode Ways 
 A message containing letters from A-Z is being encoded to numbers using the following mapping:
 
