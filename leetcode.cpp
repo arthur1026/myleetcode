@@ -52,6 +52,36 @@ public:
 
 class Solution {
 public:
+/*Longest Palindromic Substring
+Given a string S, find the longest palindromic substring in S. You may assume that the maximum length of S is 1000, and there exists one unique longest palindromic substring.
+*/
+    string longestPalindrome(string s) {
+        if (s.empty())
+            return s;
+        int n = s.size();
+        bool dp[n][n];
+        fill_n(&dp[0][0], n*n, false);
+        
+        //vector<vector<bool> > dp(n, vector<bool>(n, false));
+        // initialize first row
+        dp[0][0] = true;
+        size_t max_len = 1;
+        size_t start = 0;
+        
+        // use dp
+        for (size_t i = 0; i < n; i++) {
+            dp[i][i] = true;
+            for (size_t j = 0; j < i; j++) {
+                dp[j][i] = (s[j] == s[i] && (i - j < 2 || dp[j+1][i-1]));
+                if (dp[j][i] && max_len < (i - j + 1)) {
+                    max_len = i - j + 1;
+                    start = j;
+                }
+            }
+        }        
+        return s.substr(start, max_len);
+    }
+    
 /* Regular Expression Matching 
 Implement regular expression matching with support for '.' and '*'.
 
