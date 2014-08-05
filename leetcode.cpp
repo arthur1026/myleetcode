@@ -52,6 +52,77 @@ public:
 
 class Solution {
 public:
+/*Reverse Nodes in k-Group 
+Given a linked list, reverse the nodes of a linked list k at a time and return its modified list.
+
+If the number of nodes is not a multiple of k then left-out nodes in the end should remain as it is.
+
+You may not alter the values in the nodes, only nodes itself may be changed.
+
+Only constant memory is allowed.
+
+For example,
+Given this linked list: 1->2->3->4->5
+
+For k = 2, you should return: 2->1->4->3->5
+
+For k = 3, you should return: 3->2->1->4->5
+*/
+    void ReverseKNodes(ListNode* start, ListNode* end) {
+        ListNode* prev = start;
+        ListNode* cur = prev->next;
+        ListNode* next = cur;        
+        while (prev != end) {
+            next = cur->next;
+            cur->next = prev;
+            
+            prev = cur;
+            cur = next;
+        }
+    }
+    
+    ListNode *reverseKGroup(ListNode *head, int k) {
+        if (k <= 1 || !head)
+            return head;
+            
+        ListNode dummy(0);
+        dummy.next = head;
+        ListNode* prev_k_start = &dummy;
+        ListNode* cur = head;
+        ListNode* k_start = NULL;
+        ListNode* k_end = NULL;
+        
+        while (cur) {
+            k_start = cur;
+            k_end = cur;
+            // advance k-1 nodes
+            int i = 1;
+            for (; i < k; i++) {
+                if (cur) {
+                    cur = cur->next;
+                    k_end = k_end->next;
+                } else {
+                    break;
+                }
+            }
+            if (i < k || !cur)
+                break;
+                
+            // valid
+            cur = cur->next;
+            
+            // reverse k nodes
+            ReverseKNodes(k_start, k_end);        
+            
+            prev_k_start->next = k_end;
+            k_start->next = cur;
+            
+            prev_k_start = k_start;
+        }
+        
+        return dummy.next;
+    }
+    
 /*Container With Most Water
 Given n non-negative integers a1, a2, ..., an, where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
 
