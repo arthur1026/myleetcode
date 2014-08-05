@@ -52,6 +52,38 @@ public:
 
 class Solution {
 public:
+/*Length of Last Word 
+Given a string s consists of upper/lower-case alphabets and empty space characters ' ', return the length of last word in the string.
+
+If the last word does not exist, return 0.
+
+Note: A word is defined as a character sequence consists of non-space characters only.
+
+For example, 
+Given s = "Hello World",
+return 5.
+*/
+    int lengthOfLastWord(const char *s) {
+        int len = 0;
+        bool last_is_space = false;
+        
+        while (*s != '\0') {
+            if (*s == ' ') {
+                // don't hurry to clear len
+                last_is_space = true;
+            } else {
+                if (last_is_space)
+                    len = 1;
+                else
+                    len++;
+                last_is_space = false;
+            }
+            s++;
+        }
+        
+        return len;
+    }
+
 /*Longest Palindromic Substring
 Given a string S, find the longest palindromic substring in S. You may assume that the maximum length of S is 1000, and there exists one unique longest palindromic substring.
 */
