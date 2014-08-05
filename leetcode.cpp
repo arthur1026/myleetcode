@@ -52,6 +52,65 @@ public:
 
 class Solution {
 public:
+/*Multiply Strings 
+Given two numbers represented as strings, return multiplication of the numbers as a string.
+
+Note: The numbers can be arbitrarily large and are non-negative.
+*/
+    string multiply(string num1, string num2) {
+        // always let num1 has smaller size (no reason)
+        if (num1.size() < num2.size())
+            swap(num1, num2);
+            
+        vector<vector<int> > levels;
+        size_t max_len = 0;
+        for (int i = num2.size()-1; i >= 0; i--) {
+            int n2 = num2[i] - '0';
+            vector<int> single_level;
+            
+            // push '0's
+            for (int z = 0; z < num2.size() - 1 - i; z++)
+                single_level.push_back(0);
+                
+            // mutliply
+            int carry = 0;
+            for (int j = num1.size() - 1; j >= 0; j--) {
+                int n1 = num1[j] - '0';
+                int product = n1 * n2 + carry;
+                carry = product / 10;
+                single_level.push_back(product % 10);
+            }
+            
+            if (carry)
+                single_level.push_back(carry);
+                
+            max_len = max(max_len, single_level.size());
+            levels.push_back(single_level);
+        }
+        
+        // sum all levels
+        string reverse_result;
+        int carry = 0;
+        for (int c = 0; c < max_len; c++) {
+            int sum = carry;
+            for (int r = 0; r < levels.size(); r++) {
+                if (levels[r].size() < c+1)
+                    continue;
+                sum += levels[r][c];
+            }
+            carry = sum / 10;
+            reverse_result.push_back('0' + (sum%10));
+        }
+        if (carry)
+            reverse_result.push_back('0' + carry);
+        
+        // remove end '0's
+        while(reverse_result.size() > 1 && reverse_result[reverse_result.size()-1] == '0')
+            reverse_result.pop_back();
+        
+        return string(reverse_result.rbegin(), reverse_result.rend());
+    }
+    
 /*Minimum Window Substring 
 Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
 
