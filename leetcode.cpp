@@ -52,6 +52,40 @@ public:
 
 class Solution {
 public:
+/*Longest Valid Parentheses 
+Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+
+For "(()", the longest valid parentheses substring is "()", which has length = 2.
+
+Another example is ")()())", where the longest valid parentheses substring is "()()", which has length = 4.
+*/
+    int longestValidParentheses(string s) {
+        if (s.size() <= 1)
+            return 0;
+        int start = -1;
+        int max_len = 0;
+        stack<int> left_positions;
+        
+        for (int i = 0; i < s.size(); i++) {
+            if (s[i] == '(') {
+                left_positions.push(i);
+            } else {
+                if (left_positions.empty())
+                    start = i;
+                else {
+                    left_positions.pop();
+                    if (left_positions.empty()) {
+                        max_len = max(max_len, i - start);
+                    } else {
+                        max_len = max(max_len, i - left_positions.top());
+                    }
+                }
+            }
+        }
+        
+        return max_len;
+    }
+    
 /*Multiply Strings 
 Given two numbers represented as strings, return multiplication of the numbers as a string.
 
