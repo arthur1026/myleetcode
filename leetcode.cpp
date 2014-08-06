@@ -52,6 +52,62 @@ public:
 
 class Solution {
 public:
+/*Valid Number 
+Validate if a given string is numeric.
+
+Some examples:
+"0" => true
+" 0.1 " => true
+"abc" => false
+"1 a" => false
+"2e10" => true
+Note: It is intended for the problem statement to be ambiguous. You should gather all requirements up front before implementing one.
+*/
+    bool isNumber(const char *s) {
+        enum InputType {
+            INVALID,
+            SPACE,
+            SIGN,
+            DIGIT,
+            DOT,
+            EXPONENT,
+            NUM_INPUTS
+        };
+        
+        const int transitionTable[][NUM_INPUTS] = {
+            -1, 0, 3, 1, 2, -1,
+            -1, 8, -1, 1, 4, 5,
+            -1, -1, -1, 4, -1, -1,
+            -1, -1, -1, 1, 2, -1,
+            -1, 8, -1, 4, -1, 5,
+            -1, -1, 6, 7, -1, -1,
+            -1, -1, -1, 7, -1, -1,
+            -1, 8, -1, 7, -1, -1,
+            -1, 8, -1, -1, -1, -1,
+        };
+        
+        int state = 0;
+        for (; *s != '\0'; ++s) {
+            InputType inputType = INVALID;
+            if (isspace(*s))
+                inputType = SPACE;
+            else if (*s == '+' || *s == '-')
+                inputType = SIGN;
+            else if (isdigit(*s))
+                inputType = DIGIT;
+            else if (*s == '.')
+                inputType = DOT;
+            else if (*s == 'e' || *s == 'E')
+                inputType = EXPONENT;
+                
+            state = transitionTable[state][inputType];
+            if (state == -1)
+                return false;
+        }
+        
+        return (state == 1 || state == 4 || state == 7 || state == 8);
+    }
+    
 /*Substring with Concatenation of All Words 
 You are given a string, S, and a list of words, L, that are all of the same length. Find all starting indices of substring(s) in S that is a concatenation of each word in L exactly once and without any intervening characters.
 
