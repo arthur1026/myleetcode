@@ -52,6 +52,25 @@ public:
 
 class Solution {
 public:
+/*Divide Two Integers 
+Divide two integers without using multiplication, division and mod operator.
+*/
+    int divide(int dividend, int divisor) {
+        long long a = dividend >= 0 ? dividend : -(long long)dividend;
+        long long b = divisor >= 0 ? divisor : -(long long)divisor;
+        
+        long long result = 0;
+        while (a >= b) {
+            long long c = b;
+            for (int i = 0; a >= c; ++i, c <<= 1) {
+                a -= c;
+                result += 1 << i;
+            }
+        }
+        
+        return ((dividend^divisor) >> 31) ? (-result) : result;
+    }
+    
 /*Gray Code
 The gray code is a binary numeral system where two successive values differ in only one bit.
 
