@@ -52,6 +52,37 @@ public:
 
 class Solution {
 public:
+/*Construct Binary Tree from Inorder and Postorder Traversal 
+Given inorder and postorder traversal of a tree, construct the binary tree.
+
+Note:
+You may assume that duplicates do not exist in the tree.
+*/
+    // Seems like divide and conquer
+    TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder) {
+        return buildTree(begin(inorder), end(inorder), begin(postorder), end(postorder));
+    }
+    
+    template<typename miu>
+    TreeNode* buildTree(miu in_first, miu in_last, miu post_first, miu post_last) {
+        if (in_first == in_last)
+            return NULL;
+        if (post_first == post_last)
+            return NULL;
+            
+        const auto val = *prev(post_last);
+        TreeNode* root = new TreeNode(val);
+        
+        auto in_root_pos = find(in_first, in_last, val);
+        auto left_size = distance(in_first, in_root_pos);
+        auto post_left_last = next(post_first, left_size);
+        
+        root->left = buildTree(in_first, in_root_pos, pos_first, post_left_last);
+        root->right = buildTree(next(in_root_pos), in_last, post_left_last, prev(post_last));
+        
+        return root;
+    }
+    
 /*Maximal Rectangle 
 Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing all ones and return its area.
 */
