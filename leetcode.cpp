@@ -52,6 +52,40 @@ public:
 
 class Solution {
 public:
+/*Binary Tree Maximum Path Sum 
+Given a binary tree, find the maximum path sum.
+
+The path may start and end at any node in the tree.
+
+For example:
+Given the below binary tree,
+
+       1
+      / \
+     2   3
+Return 6.
+*/
+    int max_sum;
+    int maxPathSum(TreeNode *root) {
+        max_sum = INT_MIN;
+        dfs(root);
+        return max_sum;
+    }
+    
+    int dfs(const TreeNode *root) {
+        if (!root)
+            return 0;
+        int l = dfs(root->left);
+        int r = dfs(root->right);
+        int sum = root->val;
+        if (l > 0)
+            sum += l;
+        if (r > 0)
+            sum += r;
+        max_sum = max(max_sum, sum);
+        return max(r, l) > 0 ? max(r,l) + root->val : root->val;
+    }
+    
 /*Unique Binary Search Trees II 
 Given n, generate all structurally unique BST's (binary search trees) that store values 1...n.
 
